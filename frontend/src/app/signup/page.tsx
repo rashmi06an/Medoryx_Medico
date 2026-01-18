@@ -294,10 +294,10 @@ export default function SignupPage() {
                 <p>
                   Already have an account?{" "}
                   <button
-                    onClick={() => router.push("/login")}
+                    onClick={() => router.push("/auth/login")}
                     className="link-button"
                   >
-                    Sign In
+                    Log In
                   </button>
                 </p>
               </div>

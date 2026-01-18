@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Image from "next/image";
+import { FiEye, FiEyeOff, FiArrowRight, FiLock, FiPhone } from "react-icons/fi";
 
 type UserRole = "patient" | "doctor" | "pharmacy" | "hospital";
 
@@ -16,17 +18,24 @@ export default function LoginPage() {
 
   const [phone, setPhone] = useState("");
   const [pin, setPin] = useState("");
+  const [showPin, setShowPin] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleLogin = () => {
+    setError("");
+
     if (phone.length !== 10) {
-      alert("Enter valid phone number");
+      setError("Please enter a valid 10-digit phone number");
       return;
     }
 
     if (pin.length !== 4) {
-      alert("Enter 4-digit PIN");
+      setError("PIN must be exactly 4 digits");
       return;
     }
+
+    setLoading(true);
 
     const users: User[] = JSON.parse(
       localStorage.getItem("medoryx_users") || "[]"
@@ -37,50 +46,492 @@ export default function LoginPage() {
     );
 
     if (!user) {
-      alert("Invalid phone number or PIN");
+      setError("Invalid phone number or PIN");
+      setLoading(false);
       return;
     }
 
     localStorage.setItem("currentUser", JSON.stringify(user));
-    router.push("/dashboard");
+    
+    const dashboardRoutes: Record<UserRole, string> = {
+      patient: "/dashboard/patient",
+      doctor: "/dashboard/doctor",
+      pharmacy: "/dashboard/pharmacy",
+      hospital: "/dashboard/hospital",
+    };
+
+    router.push(dashboardRoutes[user.role]);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-xl shadow w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center text-blue-600 mb-6">
-          Login to MEDORYX
-        </h2>
+    <div className="login-container">
+      <style jsx>{`
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
 
-        <input
-          type="tel"
-          placeholder="Phone Number"
-          maxLength={10}
-          className="w-full mb-4 p-2 border rounded"
-          value={phone}
-          onChange={(e) =>
-            setPhone(e.target.value.replace(/\D/g, ""))
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
           }
-        />
-
-        <input
-          type="password"
-          placeholder="4-digit PIN"
-          maxLength={4}
-          inputMode="numeric"
-          className="w-full mb-6 p-2 border rounded"
-          value={pin}
-          onChange={(e) =>
-            setPin(e.target.value.replace(/\D/g, ""))
+          to {
+            opacity: 1;
+            transform: translateY(0);
           }
-        />
+        }
 
-        <button
-          onClick={handleLogin}
-          className="w-full bg-blue-600 text-white py-2 rounded"
-        >
-          Login
-        </button>
+        @keyframes slideInLeft {
+          from {
+            opacity: 0;
+            transform: translateX(-40px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-15px);
+          }
+        }
+
+        @keyframes glow {
+          0%, 100% {
+            box-shadow: 0 0 20px rgba(0, 128, 128, 0.3);
+          }
+          50% {
+            box-shadow: 0 0 40px rgba(0, 128, 128, 0.5);
+          }
+        }
+
+        .login-container {
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: linear-gradient(135deg, #f8fffe 0%, #e8f7f6 50%, #f0fffe 100%);
+          padding: 20px;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .login-container::before {
+          content: "";
+          position: absolute;
+          top: -50%;
+          right: -10%;
+          width: 600px;
+          height: 600px;
+          background: radial-gradient(circle, rgba(0, 128, 128, 0.1) 0%, transparent 70%);
+          border-radius: 50%;
+          animation: float 8s ease-in-out infinite;
+          z-index: 0;
+        }
+
+        .login-container::after {
+          content: "";
+          position: absolute;
+          bottom: -30%;
+          left: -5%;
+          width: 500px;
+          height: 500px;
+          background: radial-gradient(circle, rgba(0, 128, 128, 0.08) 0%, transparent 70%);
+          border-radius: 50%;
+          animation: float 10s ease-in-out infinite;
+          z-index: 0;
+        }
+
+        .login-wrapper {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 60px;
+          max-width: 1200px;
+          width: 100%;
+          z-index: 1;
+          align-items: center;
+        }
+
+        .login-visual {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          animation: slideInLeft 0.8s ease-out;
+        }
+
+        .login-visual-icon {
+          width: 300px;
+          height: 300px;
+          background: linear-gradient(135deg, rgba(0, 128, 128, 0.1) 0%, rgba(0, 128, 128, 0.05) 100%);
+          border-radius: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 120px;
+          margin-bottom: 30px;
+          animation: float 4s ease-in-out infinite;
+          border: 2px solid rgba(0, 128, 128, 0.15);
+        }
+
+        .login-visual h3 {
+          font-size: 24px;
+          color: #004d4d;
+          font-weight: 700;
+          margin-bottom: 10px;
+        }
+
+        .login-visual p {
+          font-size: 15px;
+          color: #666;
+          text-align: center;
+          line-height: 1.6;
+        }
+
+        .login-form-section {
+          animation: fadeInUp 0.8s ease-out;
+        }
+
+        .login-card {
+          background: white;
+          border-radius: 20px;
+          padding: 50px 40px;
+          box-shadow: 0 20px 60px rgba(0, 128, 128, 0.1);
+          border: 1px solid rgba(0, 128, 128, 0.1);
+          backdrop-filter: blur(10px);
+        }
+
+        .login-logo {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 40px;
+          justify-content: center;
+        }
+
+        .login-logo-image {
+          height: 35px;
+          width: 120px;
+          object-fit: contain;
+        }
+
+        .login-logo-text {
+          font-size: 20px;
+          font-weight: 800;
+          background: linear-gradient(135deg, #008080 0%, #004d4d 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          letter-spacing: -0.5px;
+        }
+
+        .login-heading {
+          font-size: 28px;
+          font-weight: 800;
+          color: #004d4d;
+          margin-bottom: 15px;
+          text-align: center;
+        }
+
+        .login-subtitle {
+          font-size: 14px;
+          color: #666;
+          text-align: center;
+          margin-bottom: 35px;
+          line-height: 1.6;
+        }
+
+        .form-group {
+          margin-bottom: 20px;
+        }
+
+        .form-label {
+          display: block;
+          font-size: 13px;
+          font-weight: 700;
+          color: #004d4d;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+          position: relative;
+          display: flex;
+          align-items: center;
+        }
+
+        .form-input {
+          width: 100%;
+          padding: 14px 16px 14px 45px;
+          border: 2px solid rgba(0, 128, 128, 0.2);
+          border-radius: 12px;
+          font-size: 15px;
+          color: #004d4d;
+          background: rgba(0, 128, 128, 0.02);
+          transition: all 0.3s ease;
+          font-weight: 500;
+        }
+
+        .form-input::placeholder {
+          color: #999;
+        }
+
+        .form-input:focus {
+          outline: none;
+          border-color: #008080;
+          background: rgba(0, 128, 128, 0.05);
+          box-shadow: 0 0 0 3px rgba(0, 128, 128, 0.1);
+        }
+
+        .input-icon {
+          position: absolute;
+          left: 14px;
+          color: #008080;
+          font-size: 18px;
+          pointer-events: none;
+        }
+
+        .toggle-pin {
+          position: absolute;
+          right: 14px;
+          cursor: pointer;
+          color: #008080;
+          font-size: 18px;
+          transition: all 0.3s ease;
+          background: none;
+          border: none;
+          padding: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .toggle-pin:hover {
+          color: #006666;
+          transform: scale(1.1);
+        }
+
+        .error-message {
+          color: #e74c3c;
+          font-size: 13px;
+          margin-top: 8px;
+          padding: 10px;
+          background: rgba(231, 76, 60, 0.1);
+          border-left: 3px solid #e74c3c;
+          border-radius: 4px;
+          animation: fadeInUp 0.3s ease-out;
+        }
+
+        .form-actions {
+          margin-top: 35px;
+        }
+
+        .login-button {
+          width: 100%;
+          padding: 14px;
+          background: linear-gradient(135deg, #008080 0%, #006666 100%);
+          color: white;
+          border: none;
+          border-radius: 12px;
+          font-size: 16px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .login-button:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 30px rgba(0, 128, 128, 0.3);
+        }
+
+        .login-button:active:not(:disabled) {
+          transform: translateY(0);
+        }
+
+        .login-button:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+
+        .signup-link {
+          text-align: center;
+          margin-top: 20px;
+          font-size: 14px;
+          color: #666;
+        }
+
+        .signup-link a {
+          color: #008080;
+          text-decoration: none;
+          font-weight: 700;
+          transition: all 0.3s ease;
+          cursor: pointer;
+        }
+
+        .signup-link a:hover {
+          color: #006666;
+          text-decoration: underline;
+        }
+
+        @media (max-width: 1024px) {
+          .login-wrapper {
+            grid-template-columns: 1fr;
+            gap: 40px;
+          }
+
+          .login-visual-icon {
+            width: 250px;
+            height: 250px;
+            font-size: 100px;
+          }
+
+          .login-card {
+            padding: 40px 30px;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .login-card {
+            padding: 30px 25px;
+          }
+
+          .login-heading {
+            font-size: 24px;
+          }
+
+          .login-visual-icon {
+            width: 200px;
+            height: 200px;
+            font-size: 80px;
+            margin-bottom: 20px;
+          }
+
+          .login-visual h3 {
+            font-size: 20px;
+          }
+
+          .form-input {
+            padding: 12px 14px 12px 40px;
+            font-size: 14px;
+          }
+
+          .login-button {
+            padding: 12px;
+            font-size: 14px;
+          }
+        }
+      `}</style>
+
+      <div className="login-wrapper">
+        {/* Left Side - Visual */}
+        <div className="login-visual">
+          <div className="login-visual-icon">🔐</div>
+          <h3>Welcome Back</h3>
+          <p>Access your Medoryx healthcare dashboard with your phone number and PIN</p>
+        </div>
+
+        {/* Right Side - Form */}
+        <div className="login-form-section">
+          <div className="login-card">
+            {/* Logo */}
+            <div className="login-logo">
+              <Image
+                src="/medoryx-logo.png"
+                alt="Medoryx"
+                width={120}
+                height={35}
+                className="login-logo-image"
+              />
+              <span className="login-logo-text">Medoryx</span>
+            </div>
+
+            {/* Heading */}
+            <h1 className="login-heading">Login</h1>
+            <p className="login-subtitle">Enter your phone number and PIN to access your account</p>
+
+            {/* Phone Input */}
+            <div className="form-group">
+              <label className="form-label">Phone Number</label>
+              <div className="input-wrapper">
+                <FiPhone className="input-icon" />
+                <input
+                  type="tel"
+                  placeholder="10-digit phone number"
+                  maxLength={10}
+                  inputMode="numeric"
+                  className="form-input"
+                  value={phone}
+                  onChange={(e) => {
+                    setPhone(e.target.value.replace(/\D/g, ""));
+                    setError("");
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* PIN Input */}
+            <div className="form-group">
+              <label className="form-label">4-Digit PIN</label>
+              <div className="input-wrapper">
+                <FiLock className="input-icon" />
+                <input
+                  type={showPin ? "text" : "password"}
+                  placeholder="Enter your PIN"
+                  maxLength={4}
+                  inputMode="numeric"
+                  className="form-input"
+                  value={pin}
+                  onChange={(e) => {
+                    setPin(e.target.value.replace(/\D/g, ""));
+                    setError("");
+                  }}
+                />
+                <button
+                  className="toggle-pin"
+                  onClick={() => setShowPin(!showPin)}
+                  type="button"
+                >
+                  {showPin ? <FiEyeOff /> : <FiEye />}
+                </button>
+              </div>
+            </div>
+
+            {/* Error Message */}
+            {error && <div className="error-message">{error}</div>}
+
+            {/* Login Button */}
+            <div className="form-actions">
+              <button
+                onClick={handleLogin}
+                disabled={loading}
+                className="login-button"
+              >
+                {loading ? "Logging in..." : "Login"}
+                {!loading && <FiArrowRight />}
+              </button>
+            </div>
+
+            {/* Signup Link */}
+            <p className="signup-link">
+              Don&apos;t have an account?{" "}
+              <a onClick={() => router.push("/signup")}>Sign Up Now</a>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
