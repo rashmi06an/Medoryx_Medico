@@ -51,7 +51,9 @@ export default function InventoryPage() {
         } catch (err: any) {
             console.error(err);
             if (err.response?.status === 401) {
-                // alert("Session expired. Please login again.");
+                alert("Session expired or unauthorized. Please login again.");
+                localStorage.removeItem("token");
+                localStorage.removeItem("currentUser");
                 router.push("/auth/login");
                 return;
             }
@@ -110,7 +112,7 @@ export default function InventoryPage() {
     };
 
     return (
-        <div className="p-6 bg-gray-50 min-h-screen text-slate-800">
+        <div className="p-6 bg-white min-h-screen text-teal-800">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold text-teal-700">My Inventory</h1>
                 <button
@@ -139,7 +141,7 @@ export default function InventoryPage() {
                         <tbody>
                             {medicines.length > 0 ? (
                                 medicines.map((med) => (
-                                    <tr key={med._id} className="hover:bg-gray-50">
+                                    <tr key={med._id} className="hover:bg-white">
                                         <td className="p-4 border-b">{med.name}</td>
                                         <td className="p-4 border-b">{med.brand}</td>
                                         <td className="p-4 border-b">
@@ -150,14 +152,14 @@ export default function InventoryPage() {
                                         <td className="p-4 border-b">₹{med.price}</td>
                                         <td className="p-4 border-b">{new Date(med.expiryDate).toLocaleDateString()}</td>
                                         <td className="p-4 border-b flex gap-3">
-                                            <button className="text-blue-600 hover:text-blue-800"><FiEdit2 /></button>
+                                            <button className="text-teal-600 hover:text-teal-800"><FiEdit2 /></button>
                                             <button onClick={() => handleDelete(med._id)} className="text-red-600 hover:text-red-800"><FiTrash2 /></button>
                                         </td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={6} className="p-8 text-center text-gray-500">
+                                    <td colSpan={6} className="p-8 text-center text-white0">
                                         No medicines in stock. Add some!
                                     </td>
                                 </tr>
@@ -222,7 +224,7 @@ export default function InventoryPage() {
                                 <button
                                     type="button"
                                     onClick={() => setShowModal(false)}
-                                    className="w-full py-2 border rounded-lg hover:bg-gray-50 text-gray-700"
+                                    className="w-full py-2 border rounded-lg hover:bg-white text-gray-700"
                                 >
                                     Cancel
                                 </button>

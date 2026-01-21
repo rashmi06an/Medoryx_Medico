@@ -64,7 +64,7 @@ export default function MedicineSearchPage() {
                         placeholder="Search for 'Paracetamol', 'Metformin', etc."
                         className="w-full p-4 pl-12 rounded-xl shadow-lg border-2 border-transparent focus:border-teal-500 focus:outline-none text-lg transition-all"
                     />
-                    <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl text-gray-400" />
+                    <FiSearch className="absolute left-4 top-1/2 -tranteal-y-1/2 text-2xl text-gray-400" />
                     <button
                         type="submit"
                         className="absolute right-2 top-2 bottom-2 bg-teal-600 text-white px-8 rounded-lg font-semibold hover:bg-teal-700 transition"
@@ -83,7 +83,7 @@ export default function MedicineSearchPage() {
                     <div className="space-y-4">
                         {searched && results.length === 0 && (
                             <div className="text-center py-10 bg-white rounded-xl shadow-sm">
-                                <p className="text-xl text-gray-500">No medicines found matching "{query}".</p>
+                                <p className="text-xl text-white0">No medicines found matching "{query}".</p>
                                 <p className="text-sm text-gray-400">Try checking spelling or generic names.</p>
                             </div>
                         )}
@@ -98,7 +98,7 @@ export default function MedicineSearchPage() {
                                         {med.name}
                                         <span className="text-xs bg-teal-100 text-teal-700 px-2 py-1 rounded-full">{med.category || 'General'}</span>
                                     </h3>
-                                    <p className="text-sm text-gray-500 mb-2">{med.brand} • {med.strength} • {med.dosageForm}</p>
+                                    <p className="text-sm text-white0 mb-2">{med.brand} • {med.strength} • {med.dosageForm}</p>
 
                                     <div className="flex flex-col gap-1 text-gray-600 text-sm mt-3">
                                         <div className="flex items-center gap-2">
@@ -120,7 +120,7 @@ export default function MedicineSearchPage() {
 
                                 <div className="flex flex-col items-end gap-2 w-full md:w-auto">
                                     <div className="text-right">
-                                        <p className="text-sm text-gray-500">Price</p>
+                                        <p className="text-sm text-white0">Price</p>
                                         <p className="text-2xl font-bold text-teal-700">₹{med.price}</p>
                                     </div>
 

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { FiEye, FiEyeOff, FiArrowRight, FiArrowLeft } from "react-icons/fi";
+import axios from "axios";
 
 type UserRole = "patient" | "doctor" | "pharmacy" | "hospital";
 
@@ -105,41 +106,25 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      // Get existing users from localStorage
-      const existingUsers = JSON.parse(
-        localStorage.getItem("medoryx_users") || "[]"
-      );
-
-      // Check if user already exists
-      const userExists = existingUsers.some(
-        (user: { phone: string }) => user.phone === formData.phone
-      );
-
-      if (userExists) {
-        setError("This phone number is already registered. Please login.");
-        setLoading(false);
-        return;
-      }
-
-      // Create new user
-      const newUser = {
-        id: Date.now().toString(),
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
+      // Call Real Backend API
+      const res = await axios.post("http://localhost:8000/api/auth/register", {
         phone: formData.phone,
-        role: formData.role,
         pin: formData.pin,
-        createdAt: new Date().toISOString(),
-      };
+        role: formData.role,
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email
+      });
 
-      // Save to localStorage
-      existingUsers.push(newUser);
-      localStorage.setItem("medoryx_users", JSON.stringify(existingUsers));
-      localStorage.setItem("currentUser", JSON.stringify(newUser));
+      const { token, role } = res.data;
+
+      // Store token and user info
+      localStorage.setItem("token", token);
+      localStorage.setItem("currentUser", JSON.stringify({
+        phone: formData.phone,
+        role,
+        token,
+        name: `${formData.firstName} ${formData.lastName}`
+      }));
 
       // Route to appropriate dashboard
       const dashboardRoutes: Record<UserRole, string> = {
@@ -149,9 +134,10 @@ export default function SignupPage() {
         hospital: "/dashboard/hospital",
       };
 
-      router.push(dashboardRoutes[formData.role as UserRole]);
-    } catch {
-      setError("An error occurred during signup. Please try again.");
+      router.push(dashboardRoutes[role as UserRole]);
+    } catch (err: any) {
+      console.error(err);
+      setError(err.response?.data?.msg || "Signup failed. Please try again.");
     } finally {
       setLoading(false);
     }

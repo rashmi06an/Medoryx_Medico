@@ -48,11 +48,11 @@ export default function LoginPage() {
         pin
       });
 
-      const { token, role } = res.data;
+      const { token, role, name } = res.data;
 
       // Store token and user info
       localStorage.setItem("token", token);
-      localStorage.setItem("currentUser", JSON.stringify({ phone, role, token }));
+      localStorage.setItem("currentUser", JSON.stringify({ phone, role, token, name }));
 
       const dashboardRoutes: Record<string, string> = {
         patient: "/dashboard/patient",

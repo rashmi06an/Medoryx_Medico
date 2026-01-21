@@ -1,96 +1,212 @@
 "use client";
 
-import { FiSearch, FiCalendar, FiFileText, FiLogOut } from "react-icons/fi";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import axios from "axios";
+import {
+  FiSearch, FiCalendar, FiFileText, FiLogOut, FiPlusCircle,
+  FiMapPin, FiUser, FiActivity, FiArrowRight, FiClock, FiShield, FiHeart, FiChevronDown
+} from "react-icons/fi";
+import { LuPill, LuStethoscope, LuFileHeart, LuMapPin } from "react-icons/lu";
+
+const API_URL = "http://localhost:8000/api";
+
+interface User {
+  name: string;
+  phone: string;
+}
+
+interface Appointment {
+  _id: string;
+  doctor: { name: string };
+  startTime: string;
+  status: string;
+}
 
 export default function PatientDashboard() {
   const router = useRouter();
-  const [user, setUser] = useState<{ name: string } | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [nextAppointment, setNextAppointment] = useState<Appointment | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   useEffect(() => {
     const userStr = localStorage.getItem("currentUser");
     if (!userStr) {
       router.replace("/");
-    } else {
-      setUser(JSON.parse(userStr));
+      return;
     }
+    const userData = JSON.parse(userStr);
+    setUser(userData);
+
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get(`${API_URL}/appointments/patient`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const upcoming = res.data.data
+          .filter((a: any) => a.status === 'confirmed' || a.status === 'pending')
+          .sort((a: any, b: any) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())[0];
+
+        setNextAppointment(upcoming || null);
+      } catch (err) {
+        console.error("Error fetching dashboard data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-teal-800 tracking-tight">Medico<span className="text-teal-500">.</span></h1>
-            <p className="text-sm text-gray-500">Patient Portal</p>
+    <div className="min-h-screen bg-white flex flex-col items-center justify-start py-10 px-4 md:px-0">
+
+      {/* Main Container / Card Window */}
+      <div className="w-full max-w-[1000px] bg-white rounded-[3rem] shadow-2xl shadow-teal-200/60 overflow-hidden flex flex-col relative min-h-[90vh]">
+
+        {/* Navigation Bar */}
+        <nav className="h-20 flex items-center justify-between px-10 md:px-14 border-b border-teal-50">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 flex items-center justify-center">
+              <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-teal-600" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L3 7V17L12 22L21 17V7L12 2Z" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M12 22V12" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M21 7L12 12L3 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <span className="text-3xl font-black text-teal-800 tracking-tight">Medoryx</span>
           </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm font-medium text-gray-700">Welcome, {user?.name || "Patient"}</span>
+
+          <div className="relative">
             <button
-              onClick={() => {
-                localStorage.removeItem("currentUser");
-                router.push("/");
-              }}
-              className="flex items-center gap-2 text-sm text-gray-500 hover:text-red-500 transition-colors"
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+              className="flex items-center gap-2 bg-teal-50/50 p-1 rounded-full group hover:bg-teal-100/50 transition-all border border-transparent hover:border-teal-50"
             >
-              <FiLogOut /> Logout
+              <div className="w-10 h-10 rounded-full bg-teal-600 flex items-center justify-center text-white scale-90 group-hover:scale-100 transition-transform">
+                <FiUser className="text-xl" />
+              </div>
+              <FiChevronDown className="text-teal-400 mr-2" />
             </button>
+
+            {showProfileMenu && (
+              <div className="absolute top-14 right-0 w-64 bg-white rounded-3xl shadow-2xl border border-teal-50 p-6 z-50 animate-fade-in">
+                <p className="text-[10px] font-black text-teal-300 uppercase tracking-widest mb-2">Patient Profile</p>
+                <p className="text-lg font-black text-teal-900 leading-none mb-1">{user?.name}</p>
+                <p className="text-sm font-medium text-teal-500 mb-6">{user?.phone}</p>
+                <div className="space-y-2">
+                  <button onClick={() => router.push('/dashboard/patient/profile')} className="w-full text-left p-4 rounded-2xl hover:bg-teal-50 text-teal-700 font-bold text-xs uppercase transition-all">My Settings</button>
+                  <button onClick={() => { localStorage.clear(); router.push('/'); }} className="w-full text-left p-4 rounded-2xl hover:bg-red-50 text-red-500 font-bold text-xs uppercase transition-all">Logout</button>
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-      </header>
+        </nav>
 
-      {/* Main Content */}
-      <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
-        <div className="mb-10">
-          <h2 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">Your Health Dashboard</h2>
-          <p className="mt-2 text-lg text-gray-600">Access medicines, appointments, and records in one place.</p>
-        </div>
+        {/* Content Body */}
+        <main className="flex-grow p-10 md:p-16 flex flex-col items-center gap-14">
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {/* Action Card: Find Medicines */}
-          <div
-            onClick={() => router.push("/dashboard/patient/medicines")}
-            className="group bg-white p-8 rounded-2xl shadow-sm hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 cursor-pointer border border-transparent hover:border-teal-50"
+          {/* Welcome Card */}
+          <section className="w-full bg-[#FFFFFF] rounded-[3.5rem] p-12 md:p-16 flex flex-col items-center text-center shadow-inner">
+            <h1 className="text-3xl md:text-5xl font-black text-teal-900 mb-6 tracking-tight">
+              Welcome, {user?.name || "Guest"}
+            </h1>
+
+            <div className="max-w-2xl text-teal-500 font-medium text-lg md:text-xl leading-relaxed mb-10">
+              {loading ? "Loading health summary..." : nextAppointment ? (
+                <>Your next appointment with <span className="text-teal-600 font-black">Dr. {nextAppointment.doctor?.name}</span> is confirmed. Keep your health journey on track.</>
+              ) : (
+                <>No Booked Appointments. Your health deserves consistent attention. Engage with our certified specialists for next checkup.</>
+              )}
+            </div>
+
+            <button
+              onClick={() => router.push('/dashboard/patient/doctors')}
+              className="bg-teal-600 hover:bg-teal-700 text-white font-black px-12 py-5 rounded-2xl transition-all shadow-xl shadow-teal-200 active:scale-95 text-lg"
+            >
+              Access Specialists
+            </button>
+          </section>
+
+          {/* Services Grid */}
+          <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
+
+            {/* Medication */}
+            <div
+              onClick={() => router.push('/dashboard/patient/medicines')}
+              className="bg-white p-10 rounded-[2.5rem] shadow-sm hover:shadow-2xl hover:-tranteal-y-2 transition-all cursor-pointer border border-transparent hover:border-teal-50 group flex flex-col gap-6"
+            >
+              <div className="flex justify-between items-start">
+                <LuPill className="text-5xl text-teal-500 group-hover:scale-110 transition-transform" />
+                <span className="bg-teal-50 text-teal-600 text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg border border-teal-100">v2.0 Beta</span>
+              </div>
+              <div>
+                <h3 className="text-2xl font-black text-teal-900 mb-2">Medication</h3>
+                <p className="text-teal-500 font-medium">Check live stock availability in our partner pharmacy network</p>
+              </div>
+            </div>
+
+            {/* Specialists */}
+            <div
+              onClick={() => router.push('/dashboard/patient/doctors')}
+              className="bg-white p-10 rounded-[2.5rem] shadow-sm hover:shadow-2xl hover:-tranteal-y-2 transition-all cursor-pointer border border-transparent hover:border-teal-50 group flex flex-col gap-6"
+            >
+              <LuStethoscope className="text-5xl text-teal-500 group-hover:scale-110 transition-transform" />
+              <div>
+                <h3 className="text-2xl font-black text-teal-900 mb-2">Specialists</h3>
+                <p className="text-teal-500 font-medium">Schedule physical or digital visits with board-certified doctors</p>
+              </div>
+            </div>
+
+            {/* Health Records */}
+            <div
+              onClick={() => router.push('/dashboard/patient/appointments')}
+              className="bg-white p-10 rounded-[2.5rem] shadow-sm hover:shadow-2xl hover:-tranteal-y-2 transition-all cursor-pointer border border-transparent hover:border-teal-50 group flex flex-col gap-6"
+            >
+              <LuFileHeart className="text-5xl text-teal-500 group-hover:scale-110 transition-transform" />
+              <div>
+                <h3 className="text-2xl font-black text-teal-900 mb-2">Health Records</h3>
+                <p className="text-teal-500 font-medium">Access your centralized history, reports, and digital scripts</p>
+              </div>
+            </div>
+
+            {/* Pharmacy Locations */}
+            <div
+              onClick={() => router.push('/dashboard/patient/pharmacies')}
+              className="bg-white p-10 rounded-[2.5rem] shadow-sm hover:shadow-2xl hover:-tranteal-y-2 transition-all cursor-pointer border border-transparent hover:border-teal-50 group flex flex-col gap-6"
+            >
+              <LuMapPin className="text-5xl text-teal-500 group-hover:scale-110 transition-transform" />
+              <div>
+                <h3 className="text-2xl font-black text-teal-900 mb-2">Pharmacy Locations</h3>
+                <p className="text-teal-500 font-medium">Navigate to authorized medical retail fronts for pickups</p>
+              </div>
+            </div>
+
+          </div>
+        </main>
+
+        {/* Footer Emergency Button */}
+        <div className="mt-auto px-10 md:px-14 py-8 flex justify-end">
+          <button
+            onClick={() => alert("Calling Emergency 102...")}
+            className="bg-teal-600 hover:bg-teal-700 text-white font-black px-6 py-3 rounded-xl text-xs uppercase tracking-widest shadow-lg active:scale-95 transition-all"
           >
-            <div className="w-14 h-14 bg-teal-50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-teal-600 transition-colors duration-300 shadow-sm">
-              <FiSearch className="text-2xl text-teal-600 group-hover:text-white transition-colors duration-300" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-teal-700 transition-colors">Find Medicines</h3>
-            <p className="text-gray-500 leading-relaxed mb-4">
-              Real-time availability search across nearby pharmacies. Locate stock instantly.
-            </p>
-            <span className="text-teal-600 font-semibold group-hover:underline flex items-center gap-2 text-sm">
-              Search Now &rarr;
-            </span>
-          </div>
-
-          {/* Placeholder Card: Appointments */}
-          <div className="group bg-white p-8 rounded-2xl shadow-sm border border-gray-100 opacity-70 hover:opacity-100 transition-opacity duration-300">
-            <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center mb-6">
-              <FiCalendar className="text-2xl text-gray-400" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-400 mb-2">My Appointments</h3>
-            <p className="text-gray-400 leading-relaxed mb-4">
-              Book consultations with top doctors and manage your schedule.
-            </p>
-            <span className="text-xs font-medium uppercase tracking-wider text-gray-400 bg-gray-100 px-2 py-1 rounded">Coming Soon</span>
-          </div>
-
-          {/* Placeholder Card: Records */}
-          <div className="group bg-white p-8 rounded-2xl shadow-sm border border-gray-100 opacity-70 hover:opacity-100 transition-opacity duration-300">
-            <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center mb-6">
-              <FiFileText className="text-2xl text-gray-400" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-400 mb-2">Health Records</h3>
-            <p className="text-gray-400 leading-relaxed mb-4">
-              Securely store and access your medical history and prescriptions.
-            </p>
-            <span className="text-xs font-medium uppercase tracking-wider text-gray-400 bg-gray-100 px-2 py-1 rounded">Coming Soon</span>
-          </div>
+            Emergency 102 - Medico
+          </button>
         </div>
-      </main>
+
+      </div>
+
+      <style jsx global>{`
+        @keyframes fade-in {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.4s ease-out forwards;
+        }
+      `}</style>
     </div>
   );
 }

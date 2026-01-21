@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs')
 const UserSchema = new mongoose.Schema({
   phone: { type: String, required: true, unique: true },
   name: { type: String }, // For pharmacy/hospital name
+  email: { type: String },
   address: { type: String },
   location: { // GeoJSON
     type: { type: String, enum: ['Point'], default: 'Point' },
@@ -12,7 +13,11 @@ const UserSchema = new mongoose.Schema({
   pin: { type: String }, // hashed PIN
   role: { type: String, enum: ['patient', 'doctor', 'pharmacy', 'hospital'], required: true },
   otp: { type: String },
-  otpExpiry: { type: Date }
+  otpExpiry: { type: Date },
+  // Hospital specific fields
+  bedsTotal: { type: Number, default: 0 },
+  bedsAvailable: { type: Number, default: 0 },
+  icuAvailable: { type: Number, default: 0 }
 }, { timestamps: true })
 
 UserSchema.index({ location: '2dsphere' }); // For geospatial queries

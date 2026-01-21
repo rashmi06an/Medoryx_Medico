@@ -47,7 +47,7 @@ router.post('/verify-otp', async (req, res) => {
   }
 
   const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' })
-  res.json({ msg: 'OTP verified', token, role: user.role })
+  res.json({ msg: 'OTP verified', token, role: user.role, name: user.name })
 })
 
 // Login via PIN
@@ -60,18 +60,18 @@ router.post('/login-pin', async (req, res) => {
   if (!match) return res.status(400).json({ msg: 'Invalid PIN' })
 
   const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' })
-  res.json({ msg: 'Login success', token, role: user.role })
+  res.json({ msg: 'Login success', token, role: user.role, name: user.name })
 })
 
 // Direct Register (Simple flow without OTP for seamless onboarding)
 router.post('/register', async (req, res) => {
-  const { phone, pin, role, name } = req.body;
+  const { phone, pin, role, name, email } = req.body;
   if (!phone || !pin || !role) return res.status(400).json({ msg: 'Phone, PIN, and Role are required' });
 
   let user = await User.findOne({ phone });
   if (user) return res.status(400).json({ msg: 'User already exists' });
 
-  user = new User({ phone, pin, role, name });
+  user = new User({ phone, pin, role, name, email });
 
   // Pin hashing is handled by pre-save hook
   await user.save();
