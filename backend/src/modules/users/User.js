@@ -17,7 +17,20 @@ const UserSchema = new mongoose.Schema({
   // Hospital specific fields
   bedsTotal: { type: Number, default: 0 },
   bedsAvailable: { type: Number, default: 0 },
-  icuAvailable: { type: Number, default: 0 }
+  icuAvailable: { type: Number, default: 0 },
+  nicuAvailable: { type: Number, default: 0 },
+  ventilatorsAvailable: { type: Number, default: 0 },
+  generalBedsAvailable: { type: Number, default: 0 },
+  hospitalPhone: { type: String },
+  city: { type: String },
+  area: { type: String },
+  googleMapsUrl: { type: String },
+  // Doctor specific fields
+  specialization: { type: String },
+  department: { type: String },
+  experience: { type: Number },
+  rating: { type: Number, default: 0 },
+  availableTimings: { type: String } // e.g. "9:00 AM - 5:00 PM"
 }, { timestamps: true })
 
 UserSchema.index({ location: '2dsphere' }); // For geospatial queries

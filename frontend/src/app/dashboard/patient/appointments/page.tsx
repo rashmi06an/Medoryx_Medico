@@ -9,16 +9,20 @@ const API_URL = "http://localhost:8000/api";
 interface Appointment {
     _id: string;
     doctor: {
+        _id: string;
         name: string;
     };
     startTime: string;
-    status: 'pending' | 'confirmed' | 'cancelled' | 'completed';
+    status: 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'serving' | 'missed';
     reason: string;
+    tokenNumber?: number;
+    queueStatus?: 'waiting' | 'serving' | 'completed' | 'missed';
 }
 
 export default function PatientAppointments() {
     const [appointments, setAppointments] = useState<Appointment[]>([]);
     const [loading, setLoading] = useState(true);
+    const [liveQueue, setLiveQueue] = useState<{ [key: string]: number }>({});
 
     const getAuthHeader = () => {
         const token = localStorage.getItem("token");
@@ -29,7 +33,20 @@ export default function PatientAppointments() {
         setLoading(true);
         try {
             const res = await axios.get(`${API_URL}/appointments/patient`, getAuthHeader());
-            setAppointments(res.data.data);
+            const apps = res.data.data;
+            setAppointments(apps);
+
+            // Fetch live queue for each confirmed appointment's doctor
+            const doctorIds = Array.from(new Set(apps.filter((a: any) => a.status === 'confirmed' || a.status === 'serving').map((a: any) => a.doctor._id)));
+            const queueMap: { [key: string]: number } = {};
+
+            for (const docId of doctorIds) {
+                const qRes = await axios.get(`${API_URL}/appointments/live-queue/${docId}`);
+                if (qRes.data.success) {
+                    queueMap[String(docId)] = qRes.data.data.servingToken || 0;
+                }
+            }
+            setLiveQueue(queueMap);
         } catch (err) {
             console.error(err);
         } finally {
@@ -89,8 +106,8 @@ export default function PatientAppointments() {
                                             </div>
                                         </div>
                                         <div className={`px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-2 ${app.status === 'confirmed' ? 'bg-teal-50 text-teal-600' :
-                                                app.status === 'cancelled' ? 'bg-red-50 text-red-600' :
-                                                    'bg-amber-50 text-amber-600'
+                                            app.status === 'cancelled' ? 'bg-red-50 text-red-600' :
+                                                'bg-amber-50 text-amber-600'
                                             }`}>
                                             {app.status === 'confirmed' && <FiCheckCircle />}
                                             {app.status === 'cancelled' && <FiXCircle />}
@@ -99,10 +116,45 @@ export default function PatientAppointments() {
                                     </div>
 
                                     <div className="p-6 bg-teal-50 rounded-2xl border border-teal-100 group-hover:bg-teal-50/50 group-hover:border-teal-100 transition-colors">
-                                        <span className="text-[10px] font-black text-teal-400 uppercase tracking-widest mb-2 block">Consultation Reason</span>
-                                        <p className="text-teal-700 font-bold leading-relaxed">
-                                            "{app.reason || "General Consultation and Health Checkup"}"
-                                        </p>
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <span className="text-[10px] font-black text-teal-400 uppercase tracking-widest mb-2 block">Consultation Reason</span>
+                                                <p className="text-teal-700 font-bold leading-relaxed mb-4">
+                                                    "{app.reason || "General Consultation and Health Checkup"}"
+                                                </p>
+                                            </div>
+                                            {app.tokenNumber && (
+                                                <div className="flex flex-col items-center p-4 bg-white rounded-[2rem] border border-teal-100 shadow-sm">
+                                                    <span className="text-[8px] font-black text-teal-400 uppercase tracking-widest">Token</span>
+                                                    <span className="text-3xl font-black text-teal-900">#{app.tokenNumber}</span>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {app.tokenNumber && (app.status === 'confirmed' || app.status === 'pending' || app.status === 'serving') && (
+                                            <div className={`mt-4 pt-4 border-t border-teal-100 flex items-center justify-between ${liveQueue[String(app.doctor._id)] + 1 === app.tokenNumber ? 'animate-pulse' : ''}`}>
+                                                <div className="flex items-center gap-2">
+                                                    <div className={`w-2 h-2 rounded-full ${app.status === 'serving' ? 'bg-green-500' : 'bg-teal-500'} animate-pulse`}></div>
+                                                    <span className="text-xs font-bold text-teal-600">
+                                                        Serving: <span className="text-teal-900">#{liveQueue[String(app.doctor._id)] || '0'}</span>
+                                                    </span>
+                                                </div>
+
+                                                {app.status === 'serving' ? (
+                                                    <span className="px-4 py-1.5 bg-green-500 text-white text-[10px] font-black rounded-lg animate-bounce shadow-lg shadow-green-200">IN DOCTOR'S ROOM</span>
+                                                ) : liveQueue[String(app.doctor._id)] + 1 === app.tokenNumber ? (
+                                                    <div className="flex flex-col items-end">
+                                                        <span className="px-4 py-1.5 bg-orange-500 text-white text-[10px] font-black rounded-lg animate-bounce shadow-lg shadow-orange-200">YOU ARE NEXT!</span>
+                                                        <span className="text-[8px] font-bold text-orange-600 uppercase mt-1">Get ready to enter</span>
+                                                    </div>
+                                                ) : (
+                                                    <div className="text-right">
+                                                        <span className="text-[10px] font-black text-teal-400 uppercase">Wait for turn</span>
+                                                        <p className="text-[8px] font-bold text-teal-300 uppercase tracking-tighter">Approx {Math.max(0, (app.tokenNumber - (liveQueue[String(app.doctor._id)] || 0)) * 10)} mins wait</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             ))

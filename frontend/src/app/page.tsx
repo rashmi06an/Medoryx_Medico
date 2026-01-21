@@ -27,7 +27,7 @@ export default function HomePage() {
     {
       icon: <FiTrendingUp className="feature-icon" />,
       title: "Hospitals",
-      description: "Centralized healthcare management and resource optimization.",
+      description: "Real-time bed availability tracker and emergency resource management.",
     },
   ];
 

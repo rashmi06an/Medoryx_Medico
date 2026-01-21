@@ -141,6 +141,26 @@ export default function DoctorDashboard() {
                             Write New Rx <span className="transition-transform group-hover:tranteal-x-1">→</span>
                         </div>
                     </div>
+
+                    {/* Action Card: Live Queue Manager */}
+                    <div
+                        onClick={() => router.push("/dashboard/doctor/queue")}
+                        className="group bg-teal-900 p-10 rounded-[2.5rem] shadow-2xl shadow-teal-950/20 hover:-tranteal-y-1.5 transition-all duration-300 cursor-pointer flex flex-col relative overflow-hidden"
+                    >
+                        <div className="absolute top-0 right-0 p-8 opacity-10">
+                            <FiActivity size={120} className="text-white" />
+                        </div>
+                        <div className="w-16 h-16 bg-white/10 text-white rounded-2xl flex items-center justify-center mb-8 group-hover:bg-white group-hover:text-teal-900 transition-all duration-300">
+                            <FiActivity size={28} />
+                        </div>
+                        <h3 className="text-2xl font-bold text-white mb-3">Live Queue</h3>
+                        <p className="text-teal-300 font-medium leading-relaxed mb-6">
+                            Real-time turn management. Call patients and monitor waiting room status.
+                        </p>
+                        <div className="mt-auto flex items-center gap-2 text-white font-black text-sm uppercase tracking-widest">
+                            Start Serving <span className="transition-transform group-hover:tranteal-x-1">→</span>
+                        </div>
+                    </div>
                 </div>
             </main>
 

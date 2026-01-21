@@ -9,11 +9,26 @@ exports.bookAppointment = async (req, res) => {
 
         // Ensure user is patient? (Role check can be added)
 
+        // Generate token number for the doctor for today
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date();
+        endOfDay.setHours(23, 59, 59, 999);
+
+        const appointmentCount = await Appointment.countDocuments({
+            doctor,
+            createdAt: { $gte: startOfDay, $lte: endOfDay }
+        });
+
+        const tokenNumber = appointmentCount + 1;
+
         const appointment = await Appointment.create({
             patient: req.user.id,
             doctor,
             startTime,
-            reason
+            reason,
+            tokenNumber,
+            queueStatus: 'waiting'
         });
 
         res.status(201).json({
@@ -98,6 +113,95 @@ exports.updateAppointmentStatus = async (req, res) => {
         res.status(200).json({
             success: true,
             data: appointment
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: 'Server Error'
+        });
+    }
+};
+
+// @desc    Get live queue status for a doctor
+// @route   GET /api/appointments/live-queue/:doctorId
+// @access  Public
+exports.getLiveQueue = async (req, res) => {
+    try {
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date();
+        endOfDay.setHours(23, 59, 59, 999);
+
+        const servingAppointment = await Appointment.findOne({
+            doctor: req.params.doctorId,
+            status: 'serving',
+            startTime: { $gte: startOfDay, $lte: endOfDay }
+        }).populate('patient', 'name');
+
+        const waitingCount = await Appointment.countDocuments({
+            doctor: req.params.doctorId,
+            status: { $in: ['pending', 'confirmed'] },
+            queueStatus: 'waiting',
+            startTime: { $gte: startOfDay, $lte: endOfDay }
+        });
+
+        res.status(200).json({
+            success: true,
+            data: {
+                servingToken: servingAppointment ? servingAppointment.tokenNumber : null,
+                servingPatient: servingAppointment ? servingAppointment.patient?.name : null,
+                waitingCount
+            }
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: 'Server Error'
+        });
+    }
+};
+
+// @desc    Call next patient in queue
+// @route   PATCH /api/appointments/doctor/call-next
+// @access  Private (Doctor)
+exports.callNextPatient = async (req, res) => {
+    try {
+        const startOfDay = new Date();
+        startOfDay.setHours(0, 0, 0, 0);
+        const endOfDay = new Date();
+        endOfDay.setHours(23, 59, 59, 999);
+
+        // 1. Complete current serving appointment if any
+        await Appointment.updateMany(
+            { doctor: req.user.id, status: 'serving' },
+            { status: 'completed', queueStatus: 'completed' }
+        );
+
+        // 2. Find next waiting appointment
+        const nextInQueue = await Appointment.findOne({
+            doctor: req.user.id,
+            status: { $in: ['pending', 'confirmed'] },
+            queueStatus: 'waiting',
+            startTime: { $gte: startOfDay, $lte: endOfDay }
+        }).sort({ tokenNumber: 1 });
+
+        if (!nextInQueue) {
+            return res.status(200).json({
+                success: true,
+                message: 'No more patients in queue',
+                data: null
+            });
+        }
+
+        nextInQueue.status = 'serving';
+        nextInQueue.queueStatus = 'serving';
+        await nextInQueue.save();
+
+        res.status(200).json({
+            success: true,
+            data: nextInQueue
         });
     } catch (err) {
         console.error(err);

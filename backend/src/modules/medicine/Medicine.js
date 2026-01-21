@@ -43,6 +43,17 @@ const medicineSchema = new mongoose.Schema({
     strength: {
         type: String // e.g., '500mg'
     },
+    isOnMarketplace: {
+        type: Boolean,
+        default: false
+    },
+    discountPrice: {
+        type: Number
+    },
+    onExchange: {
+        type: Boolean,
+        default: false
+    },
     createdAt: {
         type: Date,
         default: Date.now
