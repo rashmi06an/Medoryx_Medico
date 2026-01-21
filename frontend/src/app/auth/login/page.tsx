@@ -13,6 +13,10 @@ interface User {
   role: UserRole;
 }
 
+import axios from "axios";
+
+// ... existing imports
+
 export default function LoginPage() {
   const router = useRouter();
 
@@ -22,7 +26,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     setError("");
 
     if (phone.length !== 10) {
@@ -37,30 +41,33 @@ export default function LoginPage() {
 
     setLoading(true);
 
-    const users: User[] = JSON.parse(
-      localStorage.getItem("medoryx_users") || "[]"
-    );
+    try {
+      // Call Real Backend API
+      const res = await axios.post("http://localhost:8000/api/auth/login-pin", {
+        phone,
+        pin
+      });
 
-    const user = users.find(
-      (u) => u.phone === phone && u.pin === pin
-    );
+      const { token, role } = res.data;
 
-    if (!user) {
-      setError("Invalid phone number or PIN");
+      // Store token and user info
+      localStorage.setItem("token", token);
+      localStorage.setItem("currentUser", JSON.stringify({ phone, role, token }));
+
+      const dashboardRoutes: Record<string, string> = {
+        patient: "/dashboard/patient",
+        doctor: "/dashboard/doctor",
+        pharmacy: "/dashboard/pharmacy",
+        hospital: "/dashboard/hospital",
+      };
+
+      router.push(dashboardRoutes[role]);
+
+    } catch (err: any) {
+      console.error(err);
+      setError(err.response?.data?.msg || "Login failed. Please check your credentials.");
       setLoading(false);
-      return;
     }
-
-    localStorage.setItem("currentUser", JSON.stringify(user));
-    
-    const dashboardRoutes: Record<UserRole, string> = {
-      patient: "/dashboard/patient",
-      doctor: "/dashboard/doctor",
-      pharmacy: "/dashboard/pharmacy",
-      hospital: "/dashboard/hospital",
-    };
-
-    router.push(dashboardRoutes[user.role]);
   };
 
   return (

@@ -149,7 +149,7 @@ export default function SignupPage() {
         hospital: "/dashboard/hospital",
       };
 
-      router.push(dashboardRoutes[formData.role]);
+      router.push(dashboardRoutes[formData.role as UserRole]);
     } catch {
       setError("An error occurred during signup. Please try again.");
     } finally {
@@ -336,9 +336,8 @@ export default function SignupPage() {
                 ].map((role) => (
                   <div
                     key={role.value}
-                    className={`role-card ${
-                      formData.role === role.value ? "selected" : ""
-                    }`}
+                    className={`role-card ${formData.role === role.value ? "selected" : ""
+                      }`}
                     onClick={() => {
                       setFormData((prev) => ({
                         ...prev,

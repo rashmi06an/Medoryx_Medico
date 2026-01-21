@@ -7,5 +7,7 @@ app.use(express.json())
 
 // Auth routes
 app.use('/api/auth', require('./modules/users/routes/auth'))
+// Medicine routes
+app.use('/api/medicines', require('./modules/medicine/medicineRoutes'))
 
 module.exports = app

@@ -887,15 +887,6 @@ body {
 div[class*="min-h-screen bg-white"] {
   background: linear-gradient(135deg, #ffffff 0%, #f0fffe 50%, #e8fffe 100%) !important;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Main Content Wrapper */
-div[class*="flex flex-1 max-w-7xl mx-auto"] {
-  width: 100%;
-  padding: 0 20px !important;
-  margin: 0 auto !important;
 }
 
 /* Dashboard Header - Teal Accent */
@@ -948,7 +939,6 @@ div[class*="bg-white rounded-lg border border-slate-200 p-6"] {
   box-shadow: 0 6px 20px rgba(0, 128, 128, 0.12) !important;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   animation: fadeInUp 0.6s ease-out backwards;
-  padding: 24px !important;
 }
 
 div[class*="bg-white rounded-lg border border-slate-200 p-6"]:hover {
@@ -957,13 +947,21 @@ div[class*="bg-white rounded-lg border border-slate-200 p-6"]:hover {
   border-color: #006666 !important;
 }
 
-/* Grid Cards Container */
-div[class*="grid grid-cols-1 md:grid-cols-4 gap-4"] {
-  display: grid !important;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
-  gap: 24px !important;
-  width: 100%;
-  margin: 0 auto !important;
+/* Apply staggered animation to cards */
+div[class*="grid grid-cols-1 md:grid-cols-4 gap-4"] > div:nth-child(1) {
+  animation-delay: 0s;
+}
+
+div[class*="grid grid-cols-1 md:grid-cols-4 gap-4"] > div:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+div[class*="grid grid-cols-1 md:grid-cols-4 gap-4"] > div:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+div[class*="grid grid-cols-1 md:grid-cols-4 gap-4"] > div:nth-child(4) {
+  animation-delay: 0.3s;
 }
 
 /* Metric Card Icons Background - Teal */
@@ -999,16 +997,12 @@ div[class*="bg-gradient-to-r from-slate-50"] {
   box-shadow: 0 10px 30px rgba(0, 128, 128, 0.3) !important;
   animation: fadeInUp 0.6s ease-out, pulseGlow 3s ease-in-out infinite 0.6s;
   border-radius: 14px !important;
-  padding: 20px 24px !important;
-  margin-bottom: 16px !important;
 }
 
 div[class*="bg-gradient-to-r from-slate-50"] .w-12.h-12 {
   background: white !important;
   color: #008080 !important;
   font-weight: 900;
-  min-width: 48px;
-  min-height: 48px;
 }
 
 div[class*="bg-gradient-to-r from-slate-50"] p {
@@ -1024,7 +1018,6 @@ div[class*="bg-gradient-to-r from-slate-50"] span {
   background: white !important;
   color: #008080 !important;
   font-weight: 800;
-  padding: 8px 16px !important;
 }
 
 /* Action Buttons - Teal */
@@ -1036,23 +1029,12 @@ button[class*="bg-slate-800 text-white rounded-lg"] {
   border: none;
   font-weight: 700;
   border-radius: 10px !important;
-  padding: 14px 20px !important;
-  font-size: 15px !important;
 }
 
 button[class*="bg-slate-800 text-white rounded-lg"]:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 25px rgba(0, 128, 128, 0.45);
   background: linear-gradient(135deg, #006666 0%, #004d4d 100%) !important;
-}
-
-/* Grid for action buttons */
-div[class*="grid grid-cols-2 gap-3"] {
-  display: grid !important;
-  grid-template-columns: 1fr 1fr !important;
-  gap: 16px !important;
-  width: 100%;
-  margin: 20px 0 !important;
 }
 
 /* Emergency Button - Red with Teal Accent */
@@ -1078,12 +1060,6 @@ div[class*="flex items-center justify-between p-4 bg-slate-50"] {
   box-shadow: 0 4px 12px rgba(0, 128, 128, 0.08) !important;
   transition: all 0.3s ease-out;
   animation: fadeInUp 0.6s ease-out backwards;
-  padding: 16px 20px !important;
-  margin-bottom: 12px !important;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
 }
 
 div[class*="flex items-center justify-between p-4 bg-slate-50"]:hover {
@@ -1091,14 +1067,6 @@ div[class*="flex items-center justify-between p-4 bg-slate-50"]:hover {
   border-color: #008080 !important;
   box-shadow: 0 6px 16px rgba(0, 128, 128, 0.15);
   transform: translateX(4px);
-}
-
-/* Token List Container */
-div[class*="space-y-2"] {
-  display: flex;
-  flex-direction: column;
-  gap: 12px !important;
-  margin-top: 16px !important;
 }
 
 /* Token Number Circle - Teal */
@@ -1125,26 +1093,11 @@ button[class*="p-2 hover:bg-slate-200"]:hover {
 h2[class*="text-3xl font-bold"] {
   color: #004d4d !important;
   font-weight: 900;
-  margin-bottom: 8px !important;
 }
 
 h3[class*="font-semibold text-slate-900"] {
   color: #008080 !important;
   font-weight: 700;
-  margin-top: 8px !important;
-}
-
-/* Page Header Section */
-div > h1[class*="text-3xl font-bold"] {
-  color: #004d4d !important;
-  font-weight: 900;
-  margin-bottom: 8px !important;
-}
-
-div > p[class*="text-slate-600"] {
-  color: #008080 !important;
-  font-weight: 500;
-  margin-bottom: 20px !important;
 }
 
 /* Dashboard Grid Layout */
@@ -1155,18 +1108,11 @@ div[class*="flex flex-1 max-w-7xl"] {
 /* Main Content Area */
 main[class*="flex-1 overflow-auto"] {
   background: transparent;
-  padding: 40px 20px !important;
-  max-width: 1200px !important;
-  margin: 0 auto !important;
-  width: 100%;
 }
 
 /* Placeholder Sections */
 div[class*="space-y-6"] {
   animation: fadeInUp 0.8s ease-out;
-  display: flex;
-  flex-direction: column;
-  gap: 32px !important;
 }
 
 /* Enhanced animations for dashboard */
@@ -1210,48 +1156,4 @@ div[class*="space-y-6"] {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-/* Apply staggered animation to cards */
-div[class*="grid grid-cols-1 md:grid-cols-4 gap-4"] > div:nth-child(1) {
-  animation-delay: 0s;
-}
-
-div[class*="grid grid-cols-1 md:grid-cols-4 gap-4"] > div:nth-child(2) {
-  animation-delay: 0.1s;
-}
-
-div[class*="grid grid-cols-1 md:grid-cols-4 gap-4"] > div:nth-child(3) {
-  animation-delay: 0.2s;
-}
-
-div[class*="grid grid-cols-1 md:grid-cols-4 gap-4"] > div:nth-child(4) {
-  animation-delay: 0.3s;
-}
-
-/* Queue Management Card */
-div[class*="bg-white rounded-lg border border-slate-200"] {
-  background: #ffffff !important;
-  border: 2px solid #008080 !important;
-  border-radius: 14px !important;
-  box-shadow: 0 6px 20px rgba(0, 128, 128, 0.12) !important;
-  overflow: hidden;
-  margin: 20px auto !important;
-  width: 100%;
-  max-width: 100%;
-}
-
-/* Queue Management Header */
-div[class*="border-b border-slate-200 p-6"] {
-  background: linear-gradient(90deg, #f0fffe 0%, #ffffff 100%) !important;
-  border-bottom: 2px solid #b3e5e1 !important;
-  padding: 28px 24px !important;
-}
-
-/* Queue Content Section */
-div[class*="p-6 space-y-3"] {
-  padding: 28px 24px !important;
-  display: flex;
-  flex-direction: column;
-  gap: 20px !important;
 }
