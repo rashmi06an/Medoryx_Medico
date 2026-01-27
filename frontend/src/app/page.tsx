@@ -3,10 +3,29 @@
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { FiUsers, FiUser, FiPackage, FiTrendingUp } from "react-icons/fi";
+import { FiUsers, FiUser, FiPackage, FiTrendingUp, FiPlus } from "react-icons/fi";
 
 export default function HomePage() {
   const router = useRouter();
+  const [showSplash, setShowSplash] = useState(true);
+  const [animateOut, setAnimateOut] = useState(false);
+
+  useEffect(() => {
+    // Start exit animation after 2.5 seconds
+    const timer1 = setTimeout(() => {
+      setAnimateOut(true);
+    }, 2500);
+
+    // Remove from DOM after animation completes (3s total)
+    const timer2 = setTimeout(() => {
+      setShowSplash(false);
+    }, 3000);
+
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
+  }, []);
 
   const features = [
     {
@@ -33,8 +52,74 @@ export default function HomePage() {
 
   return (
     <>
+      {/* Splash Screen */}
+      {showSplash && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 9999,
+            backgroundColor: "#008080", // Teal
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            transition: "opacity 0.5s ease-out, transform 0.5s ease-out",
+            opacity: animateOut ? 0 : 1,
+            pointerEvents: animateOut ? "none" : "auto",
+          }}
+        >
+          <div
+            style={{
+              color: "white",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              animation: animateOut ? "none" : "pulse 2s infinite"
+            }}
+          >
+            {/* Medical Cross Symbol */}
+            <div style={{
+              width: '100px',
+              height: '100px',
+              border: '4px solid white',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '20px',
+              animation: 'spin 3s ease-in-out infinite'
+            }}>
+              <FiPlus style={{ fontSize: '60px' }} />
+            </div>
+
+            <h1 style={{
+              fontSize: '24px',
+              fontWeight: 'bold',
+              letterSpacing: '2px',
+              animation: 'fadeInUp 1s ease-out'
+            }}>
+              MEDORYX
+            </h1>
+          </div>
+        </div>
+      )}
+
       {/* Local Styles for Landing Page */}
       <style jsx>{`
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .btn-primary {
           background: linear-gradient(135deg, #008080 0%, #006666 100%);
           color: white;
@@ -110,7 +195,20 @@ export default function HomePage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="hero">
+      <section className="hero" style={{ position: 'relative', overflow: 'hidden' }}>
+        {/* Background Image with Gradient Overlay */}
+        <div style={{ position: 'absolute', inset: 0, zIndex: -1 }}>
+          <Image
+            src="/medical-technology.png"
+            alt="Medical Technology Background"
+            fill
+            style={{ objectFit: 'cover', opacity: 0.25 }}
+            priority
+          />
+          {/* Gradient overlay to fade bottom/sides for better text readability */}
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.9) 100%)' }}></div>
+        </div>
+
         <div className="hero-container">
           <div className="hero-content-wrapper">
             {/* Left Column: Messaging */}
