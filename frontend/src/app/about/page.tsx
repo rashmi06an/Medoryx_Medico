@@ -12,6 +12,16 @@ import {
   FiTarget,
   FiMapPin,
   FiBarChart,
+  FiPackage,
+  FiClock,
+  FiMonitor,
+  FiFileText,
+  FiLayers,
+  FiAlertTriangle,
+  FiClipboard,
+  FiUsers,
+  FiShuffle,
+  FiDatabase,
 } from "react-icons/fi";
 
 export default function AboutPage() {
@@ -26,11 +36,11 @@ export default function AboutPage() {
   }, []);
 
   const problems = [
-    { title: "Finding Essential Medicines", icon: "💊" },
-    { title: "Long Clinic Waiting Times", icon: "⏱️" },
-    { title: "Unknown Hospital Bed Availability", icon: "🏥" },
-    { title: "Confusing Handwritten Prescriptions", icon: "📋" },
-    { title: "Scattered Medical Records", icon: "📁" },
+    { title: "Finding Essential Medicines", icon: <FiPackage /> },
+    { title: "Long Clinic Waiting Times", icon: <FiClock /> },
+    { title: "Unknown Hospital Bed Availability", icon: <FiMonitor /> },
+    { title: "Confusing Handwritten Prescriptions", icon: <FiFileText /> },
+    { title: "Scattered Medical Records", icon: <FiLayers /> },
   ];
 
   const solutions = [
@@ -441,6 +451,69 @@ export default function AboutPage() {
           font-size: 18px;
           color: #004d4d;
           font-weight: 700;
+        }
+
+        /* Flip Card Styles */
+        .flip-card-container {
+          background-color: transparent;
+          width: 100%;
+          height: 250px;
+          perspective: 1000px;
+          cursor: pointer;
+        }
+
+        .flip-card-inner {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          text-align: center;
+          transition: transform 0.8s;
+          transform-style: preserve-3d;
+          box-shadow: 0 4px 15px rgba(0, 128, 128, 0.08);
+          border-radius: 16px;
+        }
+
+        .flip-card-container:hover .flip-card-inner {
+          transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
+          border-radius: 16px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 20px;
+        }
+
+        .flip-card-front {
+          background-color: white;
+          color: #008080;
+          border: 1px solid rgba(0, 128, 128, 0.1);
+        }
+
+        .flip-card-back {
+          background: linear-gradient(135deg, #008080 0%, #006666 100%);
+          color: white;
+          transform: rotateY(180deg);
+          border: 1px solid #008080;
+        }
+
+        .flip-icon {
+          font-size: 60px;
+          margin-bottom: 0;
+          filter: drop-shadow(0 4px 6px rgba(0, 128, 128, 0.2));
+        }
+
+        .flip-title-back {
+          font-size: 18px;
+          font-weight: 700;
+          line-height: 1.5;
         }
 
         /* Solutions Section */
@@ -892,20 +965,34 @@ export default function AboutPage() {
             </p>
           </div>
           <div className="mission-image">
-            <div
-              style={{
-                width: "100%",
-                height: "400px",
-                background: "linear-gradient(135deg, rgba(0, 128, 128, 0.1) 0%, rgba(0, 128, 128, 0.05) 100%)",
-                borderRadius: "16px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "100px",
-                animation: "float 3s ease-in-out infinite",
-              }}
-            >
-              🏥
+            <div style={{ position: 'relative', height: '400px', width: '100%', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0, 128, 128, 0.2)' }}>
+              <Image
+                src="/hospital-exterior.png"
+                alt="Modern Hospital Infrastructure"
+                fill
+                style={{ objectFit: "cover" }}
+                className="mission-img-techno"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Team and Tech Section */}
+      <section style={{ padding: '60px', background: 'white' }}>
+        <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px' }}>
+          <div style={{ position: 'relative', height: '350px', borderRadius: '16px', overflow: 'hidden' }}>
+            <Image src="/medical-staff.png" alt="Our Medical Team" fill style={{ objectFit: 'cover' }} />
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '20px', background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)', color: 'white' }}>
+              <h3 style={{ fontSize: '20px', fontWeight: 'bold' }}>Compassionate Care</h3>
+              <p>Empowering professionals with better tools.</p>
+            </div>
+          </div>
+          <div style={{ position: 'relative', height: '350px', borderRadius: '16px', overflow: 'hidden' }}>
+            <Image src="/medical-technology.png" alt="Advanced Technology" fill style={{ objectFit: 'cover' }} />
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '20px', background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)', color: 'white' }}>
+              <h3 style={{ fontSize: '20px', fontWeight: 'bold' }}>Future-Ready Tech</h3>
+              <p>Building the digital infrastructure of tomorrow.</p>
             </div>
           </div>
         </div>
@@ -919,34 +1006,46 @@ export default function AboutPage() {
         </div>
 
         <div style={{ marginBottom: "50px" }}>
-          <h3 style={{ fontSize: "22px", color: "#004d4d", marginBottom: "20px", textAlign: "center", fontWeight: "700" }}>
+          <h3 style={{ fontSize: "22px", color: "#004d4d", marginBottom: "30px", textAlign: "center", fontWeight: "700" }}>
             Patients Struggle With:
           </h3>
           <div className="problems-grid">
             {problems.map((problem, index) => (
-              <div key={index} className="problem-card">
-                <div className="problem-icon">{problem.icon}</div>
-                <h3>{problem.title}</h3>
+              <div key={index} className="flip-card-container">
+                <div className="flip-card-inner">
+                  <div className="flip-card-front">
+                    <div className="flip-icon">{problem.icon}</div>
+                  </div>
+                  <div className="flip-card-back">
+                    <p className="flip-title-back">{problem.title}</p>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
         </div>
 
         <div>
-          <h3 style={{ fontSize: "22px", color: "#004d4d", marginBottom: "20px", textAlign: "center", fontWeight: "700" }}>
+          <h3 style={{ fontSize: "22px", color: "#004d4d", marginBottom: "30px", textAlign: "center", fontWeight: "700" }}>
             Healthcare Providers Face:
           </h3>
           <div className="problems-grid">
             {[
-              { title: "Medicine Expiry Losses", icon: "📉" },
-              { title: "Manual Inventory Tracking", icon: "📊" },
-              { title: "Overcrowded Clinics", icon: "👥" },
-              { title: "Poor Patient Flow", icon: "⚠️" },
-              { title: "Fragmented Data Systems", icon: "🔀" },
+              { title: "Medicine Expiry Losses", icon: <FiAlertTriangle /> },
+              { title: "Manual Inventory Tracking", icon: <FiClipboard /> },
+              { title: "Overcrowded Clinics", icon: <FiUsers /> },
+              { title: "Poor Patient Flow", icon: <FiShuffle /> },
+              { title: "Fragmented Data Systems", icon: <FiDatabase /> },
             ].map((problem, index) => (
-              <div key={index} className="problem-card">
-                <div className="problem-icon">{problem.icon}</div>
-                <h3>{problem.title}</h3>
+              <div key={index} className="flip-card-container">
+                <div className="flip-card-inner">
+                  <div className="flip-card-front">
+                    <div className="flip-icon">{problem.icon}</div>
+                  </div>
+                  <div className="flip-card-back">
+                    <p className="flip-title-back">{problem.title}</p>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -996,12 +1095,23 @@ export default function AboutPage() {
         </div>
 
         <div className="stats-grid">
-          {impacts.map((impact, index) => (
-            <div key={index} className="stat-card">
-              <div className="stat-icon">{impact.metric === "Reduced Medicine Wastage" ? "♻️" : impact.metric === "Lower Healthcare Costs" ? "💰" : impact.metric === "Faster Emergency Response" ? "🚑" : "❤️"}</div>
-              <h3>{impact.metric}</h3>
-            </div>
-          ))}
+          {impacts.map((impact, index) => {
+            let imgSrc = "/medical-staff.png"; // Default
+            if (impact.metric === "Reduced Medicine Wastage") imgSrc = "/medical-technology.png";
+            if (impact.metric === "Lower Healthcare Costs") imgSrc = "/stat-uptime.png";
+            if (impact.metric === "Faster Emergency Response") imgSrc = "/hospital-exterior.png";
+            if (impact.metric === "Better Patient Outcomes") imgSrc = "/medical-staff.png";
+
+            return (
+              <div key={index} className="stat-card" style={{ padding: 0, overflow: 'hidden', height: '250px', position: 'relative', background: 'black' }}>
+                <Image src={imgSrc} alt={impact.metric} fill style={{ objectFit: 'cover', opacity: 0.6 }} />
+                <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', padding: '20px' }}>
+                  {/* <div className="stat-icon" style={{ fontSize: '0px', marginBottom: '10px' }}></div>  Hide original icon spacing */}
+                  <h3 style={{ textShadow: '0 2px 4px rgba(0,0,0,0.8)', fontSize: '22px', fontWeight: 'bold' }}>{impact.metric}</h3>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 

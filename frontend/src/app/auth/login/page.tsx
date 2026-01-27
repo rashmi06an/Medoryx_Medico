@@ -565,6 +565,28 @@ export default function LoginPage() {
                 <h1 className="login-heading">Login</h1>
                 <p className="login-subtitle">Enter your phone number and PIN to access your {selectedRole} account</p>
 
+                {/* Demo Credentials Alert - For Project Checker */}
+                {selectedRole && ["pharmacy", "doctor", "patient"].includes(selectedRole) && (
+                  <div style={{ background: '#f0f9ff', padding: '12px', borderRadius: '8px', border: '1px solid #bae6fd', marginBottom: '20px', fontSize: '13px', color: '#0369a1' }}>
+                    <strong style={{ display: 'block', marginBottom: '4px' }}>PROJECT CHECKER DEMO CREDENTIALS:</strong>
+                    {selectedRole === 'pharmacy' && (
+                      <div>
+                        Phone: <strong>1234987654</strong> | PIN: <strong>9876</strong>
+                      </div>
+                    )}
+                    {selectedRole === 'doctor' && (
+                      <div>
+                        Phone: <strong>9876543201</strong> | PIN: <strong>9856</strong>
+                      </div>
+                    )}
+                    {selectedRole === 'patient' && (
+                      <div>
+                        Phone: <strong>1234098765</strong> | PIN: <strong>4567</strong>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Phone Input */}
                 <div className="form-group">
                   <label className="form-label">Phone Number</label>

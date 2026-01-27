@@ -171,18 +171,30 @@ export default function HomePage() {
       {/* Stats Section */}
       <section className="stats">
         <div className="stat-item fade-in">
+          <div className="stat-icon-img">
+            <Image src="/stat-providers.png" alt="Providers" width={80} height={80} />
+          </div>
           <h3>1000+</h3>
           <p>Healthcare Providers</p>
         </div>
         <div className="stat-item fade-in">
+          <div className="stat-icon-img">
+            <Image src="/stat-patients.png" alt="Patients" width={80} height={80} />
+          </div>
           <h3>50K+</h3>
           <p>Active Patients</p>
         </div>
         <div className="stat-item fade-in">
+          <div className="stat-icon-img">
+            <Image src="/stat-uptime.png" alt="Uptime" width={80} height={80} />
+          </div>
           <h3>99.9%</h3>
           <p>Uptime Guarantee</p>
         </div>
         <div className="stat-item fade-in">
+          <div className="stat-icon-img">
+            <Image src="/stat-uptime.png" alt="Support" width={80} height={80} />
+          </div>
           <h3>24/7</h3>
           <p>Support Available</p>
         </div>
@@ -196,16 +208,29 @@ export default function HomePage() {
         </div>
 
         <div className="features-grid">
-          {features.map((feature, index) => (
-            <div key={index} className="feature-card group" style={{ transitionDelay: `${index * 0.1}s` }}>
-              <div className="feature-icon-wrapper">
-                {feature.icon}
+          {features.map((feature, index) => {
+            let imgSrc = "/stat-patients.png"; // Fallback/Default
+            if (feature.title === "Doctors") imgSrc = "/medical-staff.png";
+            if (feature.title === "Pharmacy") imgSrc = "/medical-technology.png";
+            if (feature.title === "Hospitals") imgSrc = "/hospital-exterior.png";
+
+            return (
+              <div key={index} className="feature-card group" style={{ transitionDelay: `${index * 0.1}s`, overflow: 'hidden', padding: 0 }}>
+                <div style={{ height: '200px', position: 'relative', width: '100%' }}>
+                  <Image src={imgSrc} alt={feature.title} fill style={{ objectFit: 'cover' }} />
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6), transparent)' }}></div>
+                </div>
+                <div style={{ padding: '24px' }}>
+                  <div className="feature-icon-wrapper" style={{ marginBottom: '16px' }}>
+                    {feature.icon}
+                  </div>
+                  <h3>{feature.title}</h3>
+                  <p>{feature.description}</p>
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-br from-teal-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
               </div>
-              <h3>{feature.title}</h3>
-              <p>{feature.description}</p>
-              <div className="absolute inset-0 bg-gradient-to-br from-teal-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
