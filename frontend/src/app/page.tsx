@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { FiUsers, FiUser, FiPackage, FiTrendingUp, FiPlus } from "react-icons/fi";
+import { FiUsers, FiUser, FiPackage, FiTrendingUp, FiPlus, FiArrowRight, FiActivity, FiRefreshCw } from "react-icons/fi";
 
 export default function HomePage() {
   const router = useRouter();
@@ -374,17 +374,58 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="cta-section">
-        <div className="cta-content">
-          <h2>Ready to Transform Healthcare?</h2>
-          <p>Join thousands of healthcare professionals and patients already using Medoryx</p>
-          <button
-            className="btn-large"
-            onClick={() => router.push("/signup")}
-          >
-            Start Your Journey
-          </button>
+      {/* CTA Section (Updated Premium Design) */}
+      <section className="mx-auto max-w-6xl px-4 py-16">
+        <div className="relative isolate overflow-hidden rounded-[32px] bg-[#022c22] px-6 py-20 text-center shadow-2xl sm:px-16 sm:py-24">
+
+          {/* --- Background Image & Overlay --- */}
+          <div className="absolute inset-0 -z-10">
+            <Image
+              src="/medical-staff.png"
+              alt="Welcoming Medical Team"
+              fill
+              style={{ objectFit: 'cover', objectPosition: 'center 20%' }}
+              className="opacity-40"
+            />
+            {/* Strong Gradient Overlay for readability */}
+            <div className="absolute inset-0 bg-gradient-to-br from-teal-900/90 via-[#022c22]/80 to-[#022c22]/90 mix-blend-multiply"></div>
+            <div className="absolute inset-0 bg-black/30"></div>
+          </div>
+
+          {/* --- Floating Icons --- */}
+          <div className="absolute top-10 right-10 opacity-20 rotate-12 animate-pulse duration-[4000ms]">
+            <FiRefreshCw className="h-12 w-12 text-teal-300" />
+          </div>
+          <div className="absolute bottom-10 left-10 opacity-20 -rotate-12">
+            <FiActivity className="h-12 w-12 text-emerald-300" />
+          </div>
+
+          {/* --- Main Content --- */}
+          <div className="relative z-10 mx-auto max-w-2xl">
+            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-5xl font-sans">
+              Healthcare, without the hassle <br className="hidden sm:block" />
+            </h2>
+
+            <p className="mx-auto mt-6 max-w-xl text-lg leading-7 text-teal-100/80">
+              Connect with the growing community of professionals and patients who rely on Medoryx for clarity, not just &quot;transformation.&quot;
+            </p>
+
+            <div className="mt-10 flex flex-col items-center justify-center gap-y-4 sm:flex-row sm:gap-x-6">
+              <button
+                onClick={() => router.push("/signup")}
+                className="group relative inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-teal-500 to-emerald-500 px-8 py-3.5 text-sm font-semibold text-white shadow-[0_0_20px_rgba(20,184,166,0.3)] transition-all hover:scale-105 hover:shadow-[0_0_30px_rgba(20,184,166,0.5)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600"
+              >
+                Join Medoryx Now
+                <FiArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+
+                {/* Inner shine effect */}
+                <div className="absolute inset-0 rounded-full ring-1 ring-inset ring-white/20" />
+              </button>
+
+
+            </div>
+          </div>
+
         </div>
       </section>
 
