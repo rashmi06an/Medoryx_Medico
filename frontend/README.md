@@ -34,3 +34,12 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Deploying Medico Frontend to Vercel
+
+1.  **Push Changes**: Ensure your latest code is pushed to your Git repository.
+2.  **Import Project**: Log in to Vercel, click "Add New Project", and import the `Medico` repository.
+3.  **Root Directory**: Select `frontend` as the root directory.
+4.  **Environment Variables**:
+    *   Add `NEXT_PUBLIC_API_URL` and set it to your production backend URL (e.g., `https://your-backend.onrender.com/api`).
+5.  **Deploy**: Click "Deploy" and wait for the build to finish.

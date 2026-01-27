@@ -67,42 +67,102 @@ export default function HomePage() {
         </div>
       </nav>
 
-      {/* Full-screen Hero Banner */}
-      <section className="hero-banner">
-        <Image
-          src="/hero-banner.png"
-          alt="Medoryx Health and Wellness Banner"
-          width={1920}
-          height={600}
-          priority
-        />
-      </section>
-
       {/* Hero Section */}
       <section className="hero">
-        <div className="hero-content">
-          <div className="hero-text">
-            <span className="badge">Welcome to Healthcare Revolution</span>
-            <h1 className="hero-title">
-              Healthcare Made <span className="gradient-text">Simple & Smart</span>
-            </h1>
-            <p className="hero-description">
-              Connect patients, doctors, pharmacies, and hospitals in one unified platform.
-              Experience seamless healthcare management with secure digital solutions.
-            </p>
-            <div className="cta-buttons">
-              <button
-                className="btn-primary"
-                onClick={() => router.push("/signup")}
-              >
-                Get Started
-              </button>
-              <button
-                className="btn-secondary"
-                onClick={() => router.push("/about")}
-              >
-                Learn More
-              </button>
+        <div className="hero-container">
+          <div className="hero-content-wrapper">
+            {/* Left Column: Messaging */}
+            <div className="hero-text-section">
+              <span className="badge">Next-Gen Healthcare OS</span>
+              <h1 className="hero-title">
+                One Platform. <br />
+                <span className="gradient-text">Complete Care.</span>
+              </h1>
+              <p className="hero-description">
+                Medoryx seamlessly unites patients, doctors, pharmacies, and hospitals into a single, high-performance healthcare ecosystem. Experience clinical excellence through digital innovation.
+              </p>
+              <div className="cta-group">
+                <button
+                  className="btn-primary"
+                  onClick={() => router.push("/signup")}
+                >
+                  Join the Network
+                </button>
+                <button
+                  className="btn-secondary"
+                  onClick={() => router.push("/about")}
+                >
+                  Our Solutions
+                </button>
+              </div>
+
+              <div className="hero-trust">
+                <p>Trusted by healthcare leaders nationwide</p>
+                <div className="trust-icons">
+                  <span className="trust-item">Hospitals</span>
+                  <span className="trust-divider"></span>
+                  <span className="trust-item">Clinics</span>
+                  <span className="trust-divider"></span>
+                  <span className="trust-item">Pharmacies</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Synergy Visualization */}
+            <div className="hero-visual-section">
+              <div className="synergy-hub">
+                <div className="hub-center">
+                  <Image
+                    src="/medoryx-logo.png"
+                    alt="Medoryx Hub"
+                    width={80}
+                    height={80}
+                    className="hub-logo"
+                  />
+                </div>
+
+                {/* Role Node: Patients */}
+                <div className="role-node node-patient">
+                  <div className="node-icon"><FiUsers /></div>
+                  <div className="node-info">
+                    <h5>Patients</h5>
+                    <span>Digital Records</span>
+                  </div>
+                </div>
+
+                {/* Role Node: Doctors */}
+                <div className="role-node node-doctor">
+                  <div className="node-icon"><FiUser /></div>
+                  <div className="node-info">
+                    <h5>Doctors</h5>
+                    <span>E-Prescriptions</span>
+                  </div>
+                </div>
+
+                {/* Role Node: Pharmacy */}
+                <div className="role-node node-pharmacy">
+                  <div className="node-icon"><FiPackage /></div>
+                  <div className="node-info">
+                    <h5>Pharmacy</h5>
+                    <span>Inventory Sync</span>
+                  </div>
+                </div>
+
+                {/* Role Node: Hospitals */}
+                <div className="role-node node-hospital">
+                  <div className="node-icon"><FiTrendingUp /></div>
+                  <div className="node-info">
+                    <h5>Hospitals</h5>
+                    <span>Resource MGMT</span>
+                  </div>
+                </div>
+
+                {/* Connection Lines */}
+                <div className="synergy-rings">
+                  <div className="ring ring-1"></div>
+                  <div className="ring ring-2"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

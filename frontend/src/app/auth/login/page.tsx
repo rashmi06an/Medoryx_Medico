@@ -25,6 +25,20 @@ export default function LoginPage() {
   const [showPin, setShowPin] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [step, setStep] = useState<"role" | "credentials">("role");
+  const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
+
+  const roles = [
+    { id: "patient" as UserRole, title: "Patient", description: "Book appointments & track health", icon: "👤" },
+    { id: "doctor" as UserRole, title: "Doctor", description: "Manage patients & consultations", icon: "👨‍⚕️" },
+    { id: "pharmacy" as UserRole, title: "Pharmacy", description: "Track orders & prescriptions", icon: "💊" },
+    { id: "hospital" as UserRole, title: "Hospital", description: "Manage beds & resources", icon: "🏥" },
+  ];
+
+  const handleRoleSelect = (role: UserRole) => {
+    setSelectedRole(role);
+    setStep("credentials");
+  };
 
   const handleLogin = async () => {
     setError("");
@@ -158,7 +172,7 @@ export default function LoginPage() {
 
         .login-wrapper {
           display: grid;
-          grid-template-columns: 1fr 1fr;
+          grid-template-columns: 1fr 1.2fr;
           gap: 60px;
           max-width: 1200px;
           width: 100%;
@@ -175,14 +189,14 @@ export default function LoginPage() {
         }
 
         .login-visual-icon {
-          width: 300px;
-          height: 300px;
+          width: 250px;
+          height: 250px;
           background: linear-gradient(135deg, rgba(0, 128, 128, 0.1) 0%, rgba(0, 128, 128, 0.05) 100%);
           border-radius: 20px;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 120px;
+          font-size: 100px;
           margin-bottom: 30px;
           animation: float 4s ease-in-out infinite;
           border: 2px solid rgba(0, 128, 128, 0.15);
@@ -209,17 +223,20 @@ export default function LoginPage() {
         .login-card {
           background: white;
           border-radius: 20px;
-          padding: 50px 40px;
+          padding: 40px;
           box-shadow: 0 20px 60px rgba(0, 128, 128, 0.1);
           border: 1px solid rgba(0, 128, 128, 0.1);
           backdrop-filter: blur(10px);
+          min-height: 550px;
+          display: flex;
+          flex-direction: column;
         }
 
         .login-logo {
           display: flex;
           align-items: center;
           gap: 12px;
-          margin-bottom: 40px;
+          margin-bottom: 30px;
           justify-content: center;
         }
 
@@ -243,7 +260,7 @@ export default function LoginPage() {
           font-size: 28px;
           font-weight: 800;
           color: #004d4d;
-          margin-bottom: 15px;
+          margin-bottom: 10px;
           text-align: center;
         }
 
@@ -251,8 +268,67 @@ export default function LoginPage() {
           font-size: 14px;
           color: #666;
           text-align: center;
-          margin-bottom: 35px;
+          margin-bottom: 30px;
           line-height: 1.6;
+        }
+
+        .role-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 15px;
+          margin-bottom: 20px;
+        }
+
+        .role-card {
+          background: white;
+          border: 2px solid rgba(0, 128, 128, 0.1);
+          border-radius: 16px;
+          padding: 20px;
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          gap: 10px;
+        }
+
+        .role-card:hover {
+          border-color: #008080;
+          background: rgba(0, 128, 128, 0.02);
+          transform: translateY(-5px);
+          box-shadow: 0 10px 20px rgba(0, 128, 128, 0.05);
+        }
+
+        .role-icon {
+          font-size: 32px;
+          background: rgba(0, 128, 128, 0.05);
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-bottom: 5px;
+          transition: all 0.3s ease;
+        }
+
+        .role-card:hover .role-icon {
+          background: #008080;
+          color: white;
+          transform: scale(1.1);
+        }
+
+        .role-card h4 {
+          font-size: 16px;
+          font-weight: 700;
+          color: #004d4d;
+        }
+
+        .role-card p {
+          font-size: 12px;
+          color: #666;
+          line-height: 1.4;
         }
 
         .form-group {
@@ -338,7 +414,10 @@ export default function LoginPage() {
         }
 
         .form-actions {
-          margin-top: 35px;
+          margin-top: 25px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
         }
 
         .login-button {
@@ -365,18 +444,31 @@ export default function LoginPage() {
           box-shadow: 0 12px 30px rgba(0, 128, 128, 0.3);
         }
 
-        .login-button:active:not(:disabled) {
-          transform: translateY(0);
+        .back-button {
+          width: 100%;
+          padding: 12px;
+          background: transparent;
+          color: #008080;
+          border: 2px solid #008080;
+          border-radius: 12px;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
         }
 
-        .login-button:disabled {
-          opacity: 0.7;
-          cursor: not-allowed;
+        .back-button:hover {
+          background: rgba(0, 128, 128, 0.05);
         }
 
         .signup-link {
           text-align: center;
-          margin-top: 20px;
+          margin-top: auto;
+          padding-top: 20px;
           font-size: 14px;
           color: #666;
         }
@@ -401,44 +493,20 @@ export default function LoginPage() {
           }
 
           .login-visual-icon {
-            width: 250px;
-            height: 250px;
-            font-size: 100px;
+            width: 180px;
+            height: 180px;
+            font-size: 80px;
           }
 
           .login-card {
-            padding: 40px 30px;
+            padding: 30px;
+            min-height: auto;
           }
         }
 
-        @media (max-width: 768px) {
-          .login-card {
-            padding: 30px 25px;
-          }
-
-          .login-heading {
-            font-size: 24px;
-          }
-
-          .login-visual-icon {
-            width: 200px;
-            height: 200px;
-            font-size: 80px;
-            margin-bottom: 20px;
-          }
-
-          .login-visual h3 {
-            font-size: 20px;
-          }
-
-          .form-input {
-            padding: 12px 14px 12px 40px;
-            font-size: 14px;
-          }
-
-          .login-button {
-            padding: 12px;
-            font-size: 14px;
+        @media (max-width: 600px) {
+          .role-grid {
+            grid-template-columns: 1fr;
           }
         }
       `}</style>
@@ -446,9 +514,16 @@ export default function LoginPage() {
       <div className="login-wrapper">
         {/* Left Side - Visual */}
         <div className="login-visual">
-          <div className="login-visual-icon">🔐</div>
-          <h3>Welcome Back</h3>
-          <p>Access your Medoryx healthcare dashboard with your phone number and PIN</p>
+          <div className="login-visual-icon">
+            {step === "role" ? "🌐" : selectedRole === "patient" ? "👤" : selectedRole === "doctor" ? "👨‍⚕️" : selectedRole === "pharmacy" ? "💊" : "🏥"}
+          </div>
+          <h3>{step === "role" ? "Join the Network" : `Welcome, ${selectedRole?.charAt(0).toUpperCase()}${selectedRole?.slice(1)}`}</h3>
+          <p>
+            {step === "role"
+              ? "Select your user type to continue your journey into a smarter healthcare ecosystem."
+              : `Access your specialized ${selectedRole} dashboard with your secure credentials.`
+            }
+          </p>
         </div>
 
         {/* Right Side - Form */}
@@ -466,71 +541,100 @@ export default function LoginPage() {
               <span className="login-logo-text">Medoryx</span>
             </div>
 
-            {/* Heading */}
-            <h1 className="login-heading">Login</h1>
-            <p className="login-subtitle">Enter your phone number and PIN to access your account</p>
+            {step === "role" ? (
+              <>
+                <h1 className="login-heading">Who are you?</h1>
+                <p className="login-subtitle">Choose your role to get started</p>
 
-            {/* Phone Input */}
-            <div className="form-group">
-              <label className="form-label">Phone Number</label>
-              <div className="input-wrapper">
-                <FiPhone className="input-icon" />
-                <input
-                  type="tel"
-                  placeholder="10-digit phone number"
-                  maxLength={10}
-                  inputMode="numeric"
-                  className="form-input"
-                  value={phone}
-                  onChange={(e) => {
-                    setPhone(e.target.value.replace(/\D/g, ""));
-                    setError("");
-                  }}
-                />
-              </div>
-            </div>
+                <div className="role-grid">
+                  {roles.map((role) => (
+                    <div
+                      key={role.id}
+                      className="role-card"
+                      onClick={() => handleRoleSelect(role.id)}
+                    >
+                      <div className="role-icon">{role.icon}</div>
+                      <h4>{role.title}</h4>
+                      <p>{role.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <>
+                <h1 className="login-heading">Login</h1>
+                <p className="login-subtitle">Enter your phone number and PIN to access your {selectedRole} account</p>
 
-            {/* PIN Input */}
-            <div className="form-group">
-              <label className="form-label">4-Digit PIN</label>
-              <div className="input-wrapper">
-                <FiLock className="input-icon" />
-                <input
-                  type={showPin ? "text" : "password"}
-                  placeholder="Enter your PIN"
-                  maxLength={4}
-                  inputMode="numeric"
-                  className="form-input"
-                  value={pin}
-                  onChange={(e) => {
-                    setPin(e.target.value.replace(/\D/g, ""));
-                    setError("");
-                  }}
-                />
-                <button
-                  className="toggle-pin"
-                  onClick={() => setShowPin(!showPin)}
-                  type="button"
-                >
-                  {showPin ? <FiEyeOff /> : <FiEye />}
-                </button>
-              </div>
-            </div>
+                {/* Phone Input */}
+                <div className="form-group">
+                  <label className="form-label">Phone Number</label>
+                  <div className="input-wrapper">
+                    <FiPhone className="input-icon" />
+                    <input
+                      type="tel"
+                      placeholder="10-digit phone number"
+                      maxLength={10}
+                      inputMode="numeric"
+                      className="form-input"
+                      value={phone}
+                      onChange={(e) => {
+                        setPhone(e.target.value.replace(/\D/g, ""));
+                        setError("");
+                      }}
+                    />
+                  </div>
+                </div>
 
-            {/* Error Message */}
-            {error && <div className="error-message">{error}</div>}
+                {/* PIN Input */}
+                <div className="form-group">
+                  <label className="form-label">4-Digit PIN</label>
+                  <div className="input-wrapper">
+                    <FiLock className="input-icon" />
+                    <input
+                      type={showPin ? "text" : "password"}
+                      placeholder="Enter your PIN"
+                      maxLength={4}
+                      inputMode="numeric"
+                      className="form-input"
+                      value={pin}
+                      onChange={(e) => {
+                        setPin(e.target.value.replace(/\D/g, ""));
+                        setError("");
+                      }}
+                    />
+                    <button
+                      className="toggle-pin"
+                      onClick={() => setShowPin(!showPin)}
+                      type="button"
+                    >
+                      {showPin ? <FiEyeOff /> : <FiEye />}
+                    </button>
+                  </div>
+                </div>
 
-            {/* Login Button */}
-            <div className="form-actions">
-              <button
-                onClick={handleLogin}
-                disabled={loading}
-                className="login-button"
-              >
-                {loading ? "Logging in..." : "Login"}
-                {!loading && <FiArrowRight />}
-              </button>
-            </div>
+                {/* Error Message */}
+                {error && <div className="error-message">{error}</div>}
+
+                {/* Form Actions */}
+                <div className="form-actions">
+                  <button
+                    onClick={handleLogin}
+                    disabled={loading}
+                    className="login-button"
+                  >
+                    {loading ? "Logging in..." : "Login"}
+                    {!loading && <FiArrowRight />}
+                  </button>
+                  <button
+                    className="back-button"
+                    onClick={() => setStep("role")}
+                    disabled={loading}
+                  >
+                    Change Role
+                  </button>
+                </div>
+              </>
+            )}
 
             {/* Signup Link */}
             <p className="signup-link">
