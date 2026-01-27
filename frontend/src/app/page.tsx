@@ -33,6 +33,48 @@ export default function HomePage() {
 
   return (
     <>
+      {/* Local Styles for Landing Page */}
+      <style jsx>{`
+        .btn-primary {
+          background: linear-gradient(135deg, #008080 0%, #006666 100%);
+          color: white;
+          font-weight: 800;
+          padding: 16px 32px;
+          border-radius: 12px;
+          border: none;
+          box-shadow: 0 10px 20px rgba(0, 128, 128, 0.2);
+          transition: all 0.3s ease;
+          cursor: pointer;
+          font-size: 16px;
+          display: inline-block;
+        }
+
+        .btn-primary:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 15px 30px rgba(0, 128, 128, 0.3);
+          background: linear-gradient(135deg, #006666 0%, #004d4d 100%);
+        }
+
+        .btn-secondary {
+          background: white;
+          color: #008080;
+          font-weight: 800;
+          padding: 16px 32px;
+          border-radius: 12px;
+          border: 2px solid #008080;
+          transition: all 0.3s ease;
+          cursor: pointer;
+          font-size: 16px;
+          display: inline-block;
+        }
+
+        .btn-secondary:hover {
+          transform: translateY(-3px);
+          background: rgba(0, 128, 128, 0.05);
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        }
+      `}</style>
+
       {/* Animated Background */}
       <div className="animated-bg"></div>
 

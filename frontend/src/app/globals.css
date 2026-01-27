@@ -78,6 +78,14 @@ body {
     @apply bg-teal-600 text-white font-black px-8 py-3 rounded-2xl shadow-lg shadow-teal-200 hover:scale-105 active:scale-95 transition-all;
 }
 
+.btn-primary {
+    @apply bg-teal-600 text-white font-black px-8 py-4 rounded-2xl shadow-lg shadow-teal-200 hover:bg-teal-500 hover:scale-105 active:scale-95 transition-all cursor-pointer;
+}
+
+.btn-secondary {
+    @apply bg-white text-teal-600 border-2 border-teal-100 font-bold px-8 py-4 rounded-2xl hover:border-teal-600 hover:bg-teal-50 hover:scale-105 active:scale-95 transition-all cursor-pointer;
+}
+
 .hero-banner {
     @apply w-full h-[320px] overflow-hidden border-b border-teal-50 flex items-center justify-center;
 }
