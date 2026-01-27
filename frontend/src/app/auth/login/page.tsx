@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Image from "next/image";
 import { FiEye, FiEyeOff, FiArrowRight, FiLock, FiPhone } from "react-icons/fi";
+import { API_BASE_URL } from "@/config/api";
 
 type UserRole = "patient" | "doctor" | "pharmacy" | "hospital";
 
@@ -57,7 +58,7 @@ export default function LoginPage() {
 
     try {
       // Call Real Backend API
-      const res = await axios.post("http://localhost:8000/api/auth/login-pin", {
+      const res = await axios.post(`${API_BASE_URL}/auth/login-pin`, {
         phone,
         pin
       });
@@ -568,7 +569,7 @@ export default function LoginPage() {
                 {/* Demo Credentials Alert - For Project Checker */}
                 {selectedRole && ["pharmacy", "doctor", "patient"].includes(selectedRole) && (
                   <div style={{ background: '#f0f9ff', padding: '12px', borderRadius: '8px', border: '1px solid #bae6fd', marginBottom: '20px', fontSize: '13px', color: '#0369a1' }}>
-                    <strong style={{ display: 'block', marginBottom: '4px' }}>PROJECT CHECKER DEMO CREDENTIALS:</strong>
+                    <strong style={{ display: 'block', marginBottom: '4px' }}>DEMO CREDENTIALS:</strong>
                     {selectedRole === 'pharmacy' && (
                       <div>
                         Phone: <strong>1234987654</strong> | PIN: <strong>9876</strong>

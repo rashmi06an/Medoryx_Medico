@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { FiEye, FiEyeOff, FiArrowRight, FiArrowLeft } from "react-icons/fi";
 import axios from "axios";
+import { API_BASE_URL } from "@/config/api";
 
 type UserRole = "patient" | "doctor" | "pharmacy" | "hospital";
 
@@ -107,7 +108,7 @@ export default function SignupPage() {
 
     try {
       // Call Real Backend API
-      const res = await axios.post("http://localhost:8000/api/auth/register", {
+      const res = await axios.post(`${API_BASE_URL}/auth/register`, {
         phone: formData.phone,
         pin: formData.pin,
         role: formData.role,

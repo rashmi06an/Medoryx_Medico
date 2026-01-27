@@ -8,11 +8,15 @@ const corsOptions = {
     origin: function (origin, callback) {
         const allowedOrigins = [
             'http://localhost:3000',
+            'https://medoryx-medico.vercel.app',
             process.env.FRONTEND_URL
         ].filter(Boolean); // Remove empty values
 
         // Allow requests with no origin (mobile apps, curl) or if origin is in allowed list
-        if (!origin || allowedOrigins.includes(origin)) {
+        // Also allow any Vercel preview deployments
+        if (!origin ||
+            allowedOrigins.includes(origin) ||
+            (origin && origin.includes('.vercel.app'))) {
             callback(null, true);
         } else {
             console.log('Blocked by CORS:', origin);
