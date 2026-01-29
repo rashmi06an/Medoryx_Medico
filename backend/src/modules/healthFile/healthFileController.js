@@ -35,7 +35,7 @@ exports.uploadHealthFile = async (req, res) => {
         });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: err.message || 'Server Error' });
     }
 };
 
@@ -60,7 +60,7 @@ exports.getMyHealthFiles = async (req, res) => {
         });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: err.message || 'Server Error' });
     }
 };
 
@@ -86,7 +86,7 @@ exports.deleteHealthFile = async (req, res) => {
         });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: err.message || 'Server Error' });
     }
 };
 
@@ -115,6 +115,6 @@ exports.updateHealthFile = async (req, res) => {
         });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: err.message || 'Server Error' });
     }
 };

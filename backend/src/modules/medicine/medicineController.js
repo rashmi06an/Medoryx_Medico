@@ -1,4 +1,5 @@
 const Medicine = require('./Medicine');
+const User = require('../users/User');
 
 // @desc    Add new medicine to inventory
 // @route   POST /api/medicines
@@ -18,10 +19,10 @@ exports.addMedicine = async (req, res) => {
             data: medicine
         });
     } catch (err) {
-        console.error(err);
+        console.error('Error adding medicine:', err);
         res.status(400).json({
             success: false,
-            message: err.message
+            message: err.message || 'Error adding medicine'
         });
     }
 };
@@ -42,7 +43,7 @@ exports.getMyStock = async (req, res) => {
         console.error(err);
         res.status(500).json({
             success: false,
-            message: 'Server Error'
+            message: err.message || 'Server Error'
         });
     }
 };
@@ -118,7 +119,7 @@ exports.searchMedicines = async (req, res) => {
         console.error(err);
         res.status(500).json({
             success: false,
-            message: 'Server Error'
+            message: err.message || 'Server Error'
         });
     }
 };
@@ -152,7 +153,7 @@ exports.updateMedicine = async (req, res) => {
         console.error(err);
         res.status(500).json({
             success: false,
-            message: 'Server Error'
+            message: err.message || 'Server Error'
         });
     }
 };
@@ -182,7 +183,7 @@ exports.deleteMedicine = async (req, res) => {
         console.error(err);
         res.status(500).json({
             success: false,
-            message: 'Server Error'
+            message: err.message || 'Server Error'
         });
     }
 };
@@ -212,7 +213,7 @@ exports.getSuggestions = async (req, res) => {
         console.error(err);
         res.status(500).json({
             success: false,
-            message: 'Server Error'
+            message: err.message || 'Server Error'
         });
     }
 };
@@ -236,7 +237,7 @@ exports.getLowStockAlerts = async (req, res) => {
         console.error(err);
         res.status(500).json({
             success: false,
-            message: 'Server Error'
+            message: err.message || 'Server Error'
         });
     }
 };
@@ -247,11 +248,12 @@ exports.getLowStockAlerts = async (req, res) => {
 exports.getExpiryAlerts = async (req, res) => {
     try {
         const sixtyDaysFromNow = new Date();
-        sixtyDaysFromNow.setDate(sixtyDaysFromNow.getDate() + 60);
+        const now = new Date();
+        sixtyDaysFromNow.setDate(now.getDate() + 60);
 
         const medicines = await Medicine.find({
             pharmacy: req.user.id,
-            expiryDate: { $lte: sixtyDaysFromNow, $gt: new Date() }
+            expiryDate: { $lte: sixtyDaysFromNow, $gt: now }
         }).sort({ expiryDate: 1 });
 
         res.status(200).json({
@@ -263,7 +265,33 @@ exports.getExpiryAlerts = async (req, res) => {
         console.error(err);
         res.status(500).json({
             success: false,
-            message: 'Server Error'
+            message: err.message || 'Server Error'
+        });
+    }
+};
+
+// @desc    Get already expired medicines
+// @route   GET /api/medicines/expired-alerts
+// @access  Private (Pharmacy)
+exports.getExpiredAlerts = async (req, res) => {
+    try {
+        const now = new Date();
+
+        const medicines = await Medicine.find({
+            pharmacy: req.user.id,
+            expiryDate: { $lte: now }
+        }).sort({ expiryDate: -1 });
+
+        res.status(200).json({
+            success: true,
+            count: medicines.length,
+            data: medicines
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: err.message || 'Server Error'
         });
     }
 };
@@ -297,7 +325,7 @@ exports.toggleMarketplace = async (req, res) => {
         console.error(err);
         res.status(500).json({
             success: false,
-            message: 'Server Error'
+            message: err.message || 'Server Error'
         });
     }
 };
@@ -320,7 +348,7 @@ exports.getMarketplaceMedicines = async (req, res) => {
         console.error(err);
         res.status(500).json({
             success: false,
-            message: 'Server Error'
+            message: err.message || 'Server Error'
         });
     }
 };
@@ -352,7 +380,7 @@ exports.toggleExchange = async (req, res) => {
         console.error(err);
         res.status(500).json({
             success: false,
-            message: 'Server Error'
+            message: err.message || 'Server Error'
         });
     }
 };
@@ -378,7 +406,7 @@ exports.getExchangeMedicines = async (req, res) => {
         console.error(err);
         res.status(500).json({
             success: false,
-            message: 'Server Error'
+            message: err.message || 'Server Error'
         });
     }
 };
@@ -459,7 +487,7 @@ exports.exportInventory = async (req, res) => {
         console.error(err);
         res.status(500).json({
             success: false,
-            message: 'Server Error'
+            message: err.message || 'Server Error'
         });
     }
 };

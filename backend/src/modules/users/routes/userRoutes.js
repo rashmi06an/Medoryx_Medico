@@ -32,7 +32,7 @@ router.get('/doctors', protect, async (req, res) => {
         res.json({ success: true, count: medicalExperts.length, data: medicalExperts });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: err.message || 'Server Error' });
     }
 });
 
@@ -52,7 +52,7 @@ router.patch('/hospital-stats', protect, async (req, res) => {
         }, { new: true });
         res.json({ success: true, data: user });
     } catch (err) {
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: err.message || 'Server Error' });
     }
 });
 
@@ -69,7 +69,7 @@ router.patch('/profile', protect, async (req, res) => {
         }, { new: true });
         res.json({ success: true, data: user });
     } catch (err) {
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: err.message || 'Server Error' });
     }
 });
 

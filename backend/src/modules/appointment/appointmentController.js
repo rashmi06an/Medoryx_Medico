@@ -62,7 +62,7 @@ exports.getDoctorAppointments = async (req, res) => {
         console.error(err);
         res.status(500).json({
             success: false,
-            message: 'Server Error'
+            message: err.message || 'Server Error'
         });
     }
 };
@@ -85,7 +85,7 @@ exports.getPatientAppointments = async (req, res) => {
         console.error(err);
         res.status(500).json({
             success: false,
-            message: 'Server Error'
+            message: err.message || 'Server Error'
         });
     }
 };
@@ -118,7 +118,7 @@ exports.updateAppointmentStatus = async (req, res) => {
         console.error(err);
         res.status(500).json({
             success: false,
-            message: 'Server Error'
+            message: err.message || 'Server Error'
         });
     }
 };
@@ -158,7 +158,7 @@ exports.getLiveQueue = async (req, res) => {
         console.error(err);
         res.status(500).json({
             success: false,
-            message: 'Server Error'
+            message: err.message || 'Server Error'
         });
     }
 };
@@ -207,7 +207,7 @@ exports.callNextPatient = async (req, res) => {
         console.error(err);
         res.status(500).json({
             success: false,
-            message: 'Server Error'
+            message: err.message || 'Server Error'
         });
     }
 };

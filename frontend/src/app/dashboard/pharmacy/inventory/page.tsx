@@ -36,6 +36,7 @@ export default function InventoryPage() {
         expiryDate: "",
         batchNumber: "",
     });
+    const [selectedId, setSelectedId] = useState<string | null>(null);
 
     const getAuthHeader = () => {
         const token = localStorage.getItem("token");
@@ -77,9 +78,16 @@ export default function InventoryPage() {
                 stock: Number(formData.stock),
             };
 
-            await axios.post(`${API_URL}/medicines`, payload, getAuthHeader());
-            alert("Medicine added successfully!");
+            if (selectedId) {
+                await axios.put(`${API_URL}/medicines/${selectedId}`, payload, getAuthHeader());
+                alert("Medicine updated successfully!");
+            } else {
+                await axios.post(`${API_URL}/medicines`, payload, getAuthHeader());
+                alert("Medicine added successfully!");
+            }
+
             setShowModal(false);
+            setSelectedId(null);
             fetchStock();
             setFormData({
                 name: "",
@@ -97,9 +105,23 @@ export default function InventoryPage() {
                 router.push("/auth/login");
                 return;
             }
-            const msg = err.response?.data?.message || "Error adding medicine";
+            const msg = err.response?.data?.message || "Error saving medicine";
             alert(`Failed: ${msg}`);
         }
+    };
+
+    const handleEdit = (med: Medicine) => {
+        setFormData({
+            name: med.name,
+            brand: med.brand || "",
+            category: med.category || "",
+            price: String(med.price),
+            stock: String(med.stock),
+            expiryDate: med.expiryDate ? med.expiryDate.split('T')[0] : "",
+            batchNumber: med.batchNumber || "",
+        });
+        setSelectedId(med._id);
+        setShowModal(true);
     };
 
     const handleDelete = async (id: string) => {
@@ -221,7 +243,19 @@ export default function InventoryPage() {
                             <FiDownload /> Export Excel
                         </button>
                         <button
-                            onClick={() => setShowModal(true)}
+                            onClick={() => {
+                                setSelectedId(null);
+                                setFormData({
+                                    name: "",
+                                    brand: "",
+                                    category: "",
+                                    price: "",
+                                    stock: "",
+                                    expiryDate: "",
+                                    batchNumber: "",
+                                });
+                                setShowModal(true);
+                            }}
                             className="flex items-center gap-2 bg-teal-600 text-white px-6 py-3 rounded-2xl font-black hover:bg-teal-700 transition shadow-xl shadow-teal-100 active:scale-95"
                         >
                             <FiPlus /> Add New
@@ -282,7 +316,12 @@ export default function InventoryPage() {
                                     </div>
 
                                     <div className="mb-6">
-                                        <h3 className="text-xl font-black text-teal-950 mb-1">{med.name}</h3>
+                                        <div className="flex justify-between items-start mb-1">
+                                            <h3 className="text-xl font-black text-teal-950">{med.name}</h3>
+                                            {new Date(med.expiryDate) <= new Date() && (
+                                                <span className="bg-red-500 text-white text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter animate-pulse">Expired</span>
+                                            )}
+                                        </div>
                                         <p className="text-sm font-bold text-teal-400">{med.brand} • {med.category || 'General'}</p>
                                     </div>
 
@@ -293,7 +332,9 @@ export default function InventoryPage() {
                                         </div>
                                         <div className="flex justify-between items-center py-2 border-b border-teal-50/50">
                                             <span className="text-xs font-black text-teal-200 uppercase tracking-widest">Expiry</span>
-                                            <span className="font-bold text-teal-900">{new Date(med.expiryDate).toLocaleDateString()}</span>
+                                            <span className={`font-bold ${new Date(med.expiryDate) <= new Date() ? 'text-red-500' : (new Date(med.expiryDate) <= new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) ? 'text-orange-500' : 'text-teal-900')}`}>
+                                                {new Date(med.expiryDate).toLocaleDateString()}
+                                            </span>
                                         </div>
                                         {med.batchNumber && (
                                             <div className="flex justify-between items-center py-2">
@@ -313,7 +354,7 @@ export default function InventoryPage() {
                                         </button>
                                         <button
                                             onClick={() => toggleExchangeListing(med)}
-                                            className={`flex flex-col items-center justify-center p-3 rounded-2xl text-[10px] font-black uppercase tracking-tighter transition-all ${med.onExchange ? 'bg-teal-600 text-white' : 'bg-teal-50 text-teal-600 hover:bg-teal-100'}`}
+                                            className={`flex flex-col items-center justify-center p-3 rounded-2xl text-[10px] font-black uppercase tracking-tighter transition-all ${med.onExchange ? 'bg-teal-600 text-white' : (new Date(med.expiryDate) <= new Date(Date.now() + 60 * 24 * 60 * 60 * 1000) && new Date(med.expiryDate) > new Date() ? 'bg-orange-100 text-orange-600 border-2 border-dashed border-orange-400 animate-pulse' : 'bg-teal-50 text-teal-600 hover:bg-teal-100')}`}
                                         >
                                             <FiRefreshCw className="text-lg mb-1" />
                                             {med.onExchange ? 'In Trade' : 'P2P Trade'}
@@ -321,7 +362,10 @@ export default function InventoryPage() {
                                     </div>
 
                                     <div className="flex gap-3 pt-6">
-                                        <button className="flex-grow bg-slate-50 text-slate-400 font-black py-4 rounded-xl hover:bg-slate-100 transition-all flex items-center justify-center gap-2">
+                                        <button
+                                            onClick={() => handleEdit(med)}
+                                            className="flex-grow bg-slate-50 text-slate-400 font-black py-4 rounded-xl hover:bg-slate-100 transition-all flex items-center justify-center gap-2"
+                                        >
                                             <FiEdit2 /> Edit
                                         </button>
                                         <button
@@ -356,7 +400,9 @@ export default function InventoryPage() {
             {showModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-6 backdrop-blur-2xl bg-teal-950/20 animate-fade-in">
                     <div className="bg-white w-full max-w-lg rounded-[3rem] p-10 shadow-2xl relative border border-teal-50">
-                        <h2 className="text-3xl font-black text-teal-950 mb-8 tracking-tighter">Stock New Entry</h2>
+                        <h2 className="text-3xl font-black text-teal-950 mb-8 tracking-tighter">
+                            {selectedId ? "Edit Medicine" : "Stock New Entry"}
+                        </h2>
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="space-y-2">
                                 <label className="text-xs font-black text-teal-300 uppercase tracking-widest pl-2">Medical Name</label>
@@ -407,7 +453,10 @@ export default function InventoryPage() {
                             <div className="flex gap-4 mt-10">
                                 <button
                                     type="button"
-                                    onClick={() => setShowModal(false)}
+                                    onClick={() => {
+                                        setShowModal(false);
+                                        setSelectedId(null);
+                                    }}
                                     className="flex-grow py-4 rounded-2xl border-2 border-teal-50 font-black text-teal-300 hover:text-teal-600 transition-all"
                                 >
                                     Discard
@@ -416,7 +465,7 @@ export default function InventoryPage() {
                                     type="submit"
                                     className="flex-grow py-4 bg-teal-600 text-white rounded-2xl font-black shadow-xl shadow-teal-200 hover:bg-teal-700 transition-all active:scale-95"
                                 >
-                                    Confirm Stock
+                                    {selectedId ? "Save Changes" : "Confirm Stock"}
                                 </button>
                             </div>
                         </form>

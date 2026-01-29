@@ -44,7 +44,7 @@ exports.updateBedAvailability = async (req, res) => {
         });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: err.message || 'Server Error' });
     }
 };
 
@@ -74,7 +74,7 @@ exports.searchHospitals = async (req, res) => {
         });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: err.message || 'Server Error' });
     }
 };
 
@@ -90,6 +90,6 @@ exports.getHospitalById = async (req, res) => {
         res.status(200).json({ success: true, data: hospital });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ success: false, message: 'Server Error' });
+        res.status(500).json({ success: false, message: err.message || 'Server Error' });
     }
 };

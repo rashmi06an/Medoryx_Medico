@@ -16,6 +16,7 @@ export default function PharmacyDashboard() {
   });
   const [lowStockCount, setLowStockCount] = useState(0);
   const [expiryAlertCount, setExpiryAlertCount] = useState(0);
+  const [expiredCount, setExpiredCount] = useState(0);
 
   useEffect(() => {
     const userStr = localStorage.getItem("currentUser");
@@ -31,6 +32,7 @@ export default function PharmacyDashboard() {
       });
       fetchLowStockCount();
       fetchExpiryAlertCount();
+      fetchExpiredAlertCount();
     }
   }, [router]);
 
@@ -59,6 +61,20 @@ export default function PharmacyDashboard() {
       }
     } catch (err) {
       console.error("Error fetching expiry alert count:", err);
+    }
+  };
+
+  const fetchExpiredAlertCount = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get("http://localhost:8000/api/medicines/expired-alerts", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (res.data.success) {
+        setExpiredCount(res.data.count);
+      }
+    } catch (err) {
+      console.error("Error fetching expired count:", err);
     }
   };
 
@@ -196,6 +212,26 @@ export default function PharmacyDashboard() {
               </div>
             )}
 
+            {expiredCount > 0 && (
+              <div
+                onClick={() => router.push("/dashboard/pharmacy/inventory")}
+                className="bg-red-600/10 border-2 border-red-500/20 p-6 rounded-[2rem] flex items-center justify-between cursor-pointer hover:bg-red-600/20 transition-colors group animate-pulse"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-red-600 rounded-xl flex items-center justify-center text-white text-xl shadow-lg shadow-red-200">
+                    <FiAlertCircle />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-black text-red-900 uppercase tracking-tight">Critical: Expired Stock!</h3>
+                    <p className="text-red-700 font-bold">{expiredCount} medicines have already expired and must be removed from active stock.</p>
+                  </div>
+                </div>
+                <span className="text-red-700 font-black group-hover:underline flex items-center gap-1">
+                  Manage Now <FiArrowRight />
+                </span>
+              </div>
+            )}
+
             {expiryAlertCount > 0 && (
               <div
                 onClick={() => router.push("/dashboard/pharmacy/inventory")}
@@ -207,7 +243,10 @@ export default function PharmacyDashboard() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-orange-900">Expiry Alert!</h3>
-                    <p className="text-orange-700">{expiryAlertCount} medicines are expiring within 60 days. List them on the marketplace to reduce wastage.</p>
+                    <p className="text-orange-700">
+                      {expiryAlertCount} medicines are expiring within 60 days.
+                      <span className="block mt-1 font-black text-orange-600 animate-bounce">Tip: List them for P2P Trade / Peer Selling to reduce loss!</span>
+                    </p>
                   </div>
                 </div>
                 <span className="text-orange-600 font-bold group-hover:underline flex items-center gap-1">
@@ -278,5 +317,5 @@ export default function PharmacyDashboard() {
   );
 }
 
-import { FiMapPin, FiInfo, FiClock } from "react-icons/fi";
+import { FiMapPin, FiInfo, FiClock, FiAlertCircle } from "react-icons/fi";
 import axios from "axios";

@@ -8,6 +8,7 @@ const {
     deleteMedicine,
     getLowStockAlerts,
     getExpiryAlerts,
+    getExpiredAlerts,
     toggleMarketplace,
     getMarketplaceMedicines,
     toggleExchange,
@@ -29,6 +30,7 @@ router.post('/', protect, addMedicine);
 router.get('/mystock', protect, getMyStock);
 router.get('/low-stock', protect, getLowStockAlerts);
 router.get('/expiry-alerts', protect, getExpiryAlerts);
+router.get('/expired-alerts', protect, getExpiredAlerts);
 router.get('/exchange', protect, getExchangeMedicines);
 router.post('/import', protect, importInventory);
 router.get('/export', protect, exportInventory);
