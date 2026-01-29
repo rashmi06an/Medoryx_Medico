@@ -2,33 +2,72 @@ const Appointment = require('./Appointment');
 
 // @desc    Book a new appointment
 // @route   POST /api/appointments
-// @access  Private (Patient)
+// @access  Private
 exports.bookAppointment = async (req, res) => {
     try {
-        const { doctor, startTime, reason } = req.body;
+        let { doctor, startTime, reason, patientId } = req.body;
 
-        // Ensure user is patient? (Role check can be added)
+        let finalPatientId;
+        let finalDoctorId;
 
-        // Generate token number for the doctor for today
-        const startOfDay = new Date();
+        if (req.user.role === 'doctor') {
+            // Case: Doctor scheduling for a patient
+            if (!patientId) {
+                return res.status(400).json({ success: false, message: 'Patient ID is required' });
+            }
+            finalPatientId = patientId;
+            finalDoctorId = req.user.id; // Use doctor's own ID from token
+        } else if (req.user.role === 'patient') {
+            // Case: Patient scheduling for themselves
+            if (!doctor) {
+                return res.status(400).json({ success: false, message: 'Doctor ID is required' });
+            }
+            finalPatientId = req.user.id;
+            finalDoctorId = doctor;
+        } else {
+            return res.status(403).json({ success: false, message: 'Unauthorized role' });
+        }
+
+        // 1. Double-booking prevention
+        const appointmentTime = new Date(startTime);
+        const margin = 15 * 60 * 1000; // 15 mins
+        const startTimeLimit = new Date(appointmentTime.getTime() - margin);
+        const endTimeLimit = new Date(appointmentTime.getTime() + margin);
+
+        const existingAppointment = await Appointment.findOne({
+            doctor: finalDoctorId,
+            status: { $in: ['pending', 'confirmed', 'serving'] },
+            startTime: { $gte: startTimeLimit, $lte: endTimeLimit }
+        });
+
+        if (existingAppointment) {
+            return res.status(400).json({
+                success: false,
+                message: 'This time slot overlaps with another appointment for this doctor. Please pick a different time.'
+            });
+        }
+
+        // 2. Generate token number
+        const startOfDay = new Date(appointmentTime);
         startOfDay.setHours(0, 0, 0, 0);
-        const endOfDay = new Date();
+        const endOfDay = new Date(appointmentTime);
         endOfDay.setHours(23, 59, 59, 999);
 
         const appointmentCount = await Appointment.countDocuments({
-            doctor,
+            doctor: finalDoctorId,
             createdAt: { $gte: startOfDay, $lte: endOfDay }
         });
 
         const tokenNumber = appointmentCount + 1;
 
         const appointment = await Appointment.create({
-            patient: req.user.id,
-            doctor,
+            patient: finalPatientId,
+            doctor: finalDoctorId,
             startTime,
             reason,
             tokenNumber,
-            queueStatus: 'waiting'
+            queueStatus: 'waiting',
+            status: req.user.role === 'doctor' ? 'confirmed' : 'pending'
         });
 
         res.status(201).json({
@@ -36,10 +75,10 @@ exports.bookAppointment = async (req, res) => {
             data: appointment
         });
     } catch (err) {
-        console.error(err);
+        console.error('Error booking appointment:', err);
         res.status(400).json({
             success: false,
-            message: err.message
+            message: err.message || 'Error booking appointment'
         });
     }
 };

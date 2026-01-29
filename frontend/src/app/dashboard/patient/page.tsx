@@ -128,7 +128,7 @@ export default function PatientDashboard() {
               Welcome back to your health center. Everything you need for a healthier life is right here.
             </p>
             <div className="flex gap-4">
-              <button onClick={() => router.push('/dashboard/patient/book-appointment')} className="bg-teal-600 text-white font-black px-8 py-4 rounded-2xl shadow-lg shadow-teal-200 hover:bg-teal-700 hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+              <button onClick={() => router.push('/dashboard/patient/doctors')} className="bg-teal-600 text-white font-black px-8 py-4 rounded-2xl shadow-lg shadow-teal-200 hover:bg-teal-700 hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
                 <FiPlus className="text-xl" /> Book Consultation
               </button>
             </div>
@@ -149,7 +149,14 @@ export default function PatientDashboard() {
                 <div className="h-4 bg-white/5 rounded-lg w-1/2"></div>
               </div>
             ) : nextAppointment ? (
-              <div className="animate-fade-in">
+              <div className="animate-fade-in relative">
+                {nextAppointment.status === 'serving' && (
+                  <div className="absolute -top-16 -left-6 -right-6 bg-red-600 text-white p-4 rounded-2xl shadow-xl animate-bounce flex items-center justify-center gap-3 z-10 border-4 border-white">
+                    <LuStethoscope className="text-2xl" />
+                    <span className="font-black text-sm uppercase tracking-widest">Doctor is Ready! Go In.</span>
+                  </div>
+                )}
+
                 <h3 className="text-2xl font-black mb-2 leading-tight">Dr. {nextAppointment.doctor?.name}</h3>
                 <div className="flex items-center gap-4 text-sm font-bold text-teal-200 mb-6">
                   <span className="flex items-center gap-1.5"><FiClock /> {new Date(nextAppointment.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
@@ -160,7 +167,9 @@ export default function PatientDashboard() {
                   <div className="mb-6 flex flex-col gap-2 bg-teal-800/50 p-4 rounded-2xl border border-teal-700/50">
                     <div className="flex justify-between items-center text-xs font-black uppercase tracking-[0.1em] text-teal-300">
                       <span>Your Token</span>
-                      <span className="bg-teal-500 text-white px-2 py-0.5 rounded-lg">LIVE</span>
+                      <span className={`px-2 py-0.5 rounded-lg ${nextAppointment.status === 'serving' ? 'bg-red-500 text-white animate-pulse' : 'bg-teal-500 text-white'}`}>
+                        {nextAppointment.status === 'serving' ? 'CALLED' : 'LIVE'}
+                      </span>
                     </div>
                     <span className="text-4xl font-black text-white">#{nextAppointment.tokenNumber}</span>
                   </div>

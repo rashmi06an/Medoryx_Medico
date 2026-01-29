@@ -25,13 +25,8 @@ export default function DoctorPatients() {
     const fetchPatients = async () => {
         setLoading(true);
         try {
-            // For now, we can fetch patients from a generic endpoint or through appointments
-            // Let's assume there's a custom logic to get unique patients seen by this doctor
-            const res = await axios.get(`${API_URL}/appointments/doctor`, getAuthHeader());
-            const uniquePatients = Array.from(new Set(res.data.data.map((app: any) => JSON.stringify(app.patient))))
-                .map((p: any) => JSON.parse(p))
-                .filter(p => p !== null);
-            setPatients(uniquePatients);
+            const res = await axios.get(`${API_URL}/users/doctor/my-patients`, getAuthHeader());
+            setPatients(res.data.data);
         } catch (err) {
             console.error(err);
         } finally {

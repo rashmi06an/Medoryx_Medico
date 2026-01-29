@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../User');
+const Appointment = require('../../appointment/Appointment');
 const { protect } = require('../../../middleware/auth');
 
 // @desc    Get all doctors with filters
@@ -32,6 +33,49 @@ router.get('/doctors', protect, async (req, res) => {
         res.json({ success: true, count: medicalExperts.length, data: medicalExperts });
     } catch (err) {
         console.error(err);
+        res.status(500).json({ success: false, message: err.message || 'Server Error' });
+    }
+});
+
+// @desc    Search for patients
+// @route   GET /api/users/patients
+// @access  Private (Doctor)
+router.get('/patients', protect, async (req, res) => {
+    try {
+        if (req.user.role !== 'doctor') {
+            return res.status(403).json({ success: false, message: 'Only doctors can search patients' });
+        }
+        const { query } = req.query;
+        let searchCriteria = { role: 'patient' };
+        if (query) {
+            searchCriteria.$or = [
+                { name: { $regex: query, $options: 'i' } },
+                { phone: { $regex: query, $options: 'i' } }
+            ];
+        }
+        const patients = await User.find(searchCriteria).select('name phone email').limit(20);
+        res.json({ success: true, count: patients.length, data: patients });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message || 'Server Error' });
+    }
+});
+
+// @desc    Get patients associated with the logged-in doctor
+// @route   GET /api/users/doctor/my-patients
+// @access  Private (Doctor)
+router.get('/doctor/my-patients', protect, async (req, res) => {
+    try {
+        if (req.user.role !== 'doctor') {
+            return res.status(403).json({ success: false, message: 'Only doctors can access this route' });
+        }
+
+        // Find unique patient IDs from appointments with this doctor
+        const patientIds = await Appointment.distinct('patient', { doctor: req.user.id });
+
+        const patients = await User.find({ _id: { $in: patientIds } }).select('name phone email address');
+
+        res.json({ success: true, count: patients.length, data: patients });
+    } catch (err) {
         res.status(500).json({ success: false, message: err.message || 'Server Error' });
     }
 });

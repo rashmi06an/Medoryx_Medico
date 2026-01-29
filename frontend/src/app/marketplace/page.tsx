@@ -120,9 +120,9 @@ export default function MarketplacePage() {
                                         <p className="text-slate-400 font-bold">{med.brand}</p>
                                     </div>
 
-                                    <div className="flex items-center gap-3 mb-8">
-                                        <span className="text-3xl font-black text-orange-600">₹{med.discountPrice}</span>
-                                        <span className="text-xl text-slate-300 font-bold line-through">₹{med.price}</span>
+                                    <div className="flex items-baseline flex-wrap gap-2 mb-8">
+                                        <span className="text-3xl font-black text-orange-600 break-all leading-none">₹{med.discountPrice}</span>
+                                        <span className="text-xl text-slate-300 font-bold line-through break-all leading-none opacity-60">₹{med.price}</span>
                                     </div>
 
                                     <div className="space-y-4 pt-6 border-t border-slate-50 mb-8">
